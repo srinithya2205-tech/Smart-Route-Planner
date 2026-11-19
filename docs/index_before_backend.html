@@ -1,0 +1,804 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>SMART ROUTE — Delivery Optimizer & Graph Theory Lab</title>
+<style>
+:root{color-scheme:dark;--bg:#071a1a;--card:rgba(255,255,255,.06);--bd:rgba(94,234,212,.2);--tx:#e8f6f3;--mu:#8fb5ae;--bl:#14b8a6;--cy:#5eead4;--gr:#86efac;--or:#fbbf24;--rd:#f87171;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:radial-gradient(1200px 600px at 70% -10%,#0f766e55,transparent),var(--bg);color:var(--tx);font:15px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+nav{display:flex;gap:6px;align-items:center;padding:12px 16px;border-bottom:1px solid var(--bd);flex-wrap:wrap;position:sticky;top:0;background:#071a1aee;backdrop-filter:blur(8px);z-index:5}
+nav b{margin-right:auto;letter-spacing:.12em;color:var(--cy)}
+nav a{color:var(--mu);text-decoration:none;padding:6px 12px;border-radius:8px}nav a.on,nav a:hover{color:#fff;background:var(--card)}
+main{max-width:1180px;margin:auto;padding:18px 16px 60px}
+.pg{display:none}.pg.on{display:block}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:16px;backdrop-filter:blur(10px)}
+button,select,input{font:inherit;color:var(--tx);background:#0f2b2b;border:1px solid var(--bd);border-radius:8px;padding:7px 12px}
+button{cursor:pointer}button:hover:not(:disabled){border-color:var(--cy)}button:disabled{opacity:.4;cursor:not-allowed}
+button.pri{background:linear-gradient(90deg,var(--bl),var(--cy));border:0;color:#04101f;font-weight:700}
+button.on{border-color:var(--cy);color:var(--cy)}
+button:focus-visible,select:focus-visible,a:focus-visible{outline:2px solid var(--cy);outline-offset:2px}
+.hero{text-align:center;padding:50px 0 20px}.hero h1{font-size:clamp(28px,5vw,52px);line-height:1.1;margin:0 0 14px;background:linear-gradient(90deg,#fff,var(--cy));-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p{color:var(--mu);font-size:18px;max-width:640px;margin:0 auto 24px}.hero .row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}.hero button{padding:12px 22px;font-size:16px}
+.anim line{stroke:var(--bl);stroke-width:2;stroke-dasharray:6 6;animation:d 1.2s linear infinite}@keyframes d{to{stroke-dashoffset:-24}}
+@media(prefers-reduced-motion:reduce){.anim line{animation:none}}
+.grid{display:grid;gap:14px}.g3{grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.sim{display:grid;grid-template-columns:1fr 320px;gap:14px}@media(max-width:900px){.sim{grid-template-columns:1fr}}
+.bar{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
+svg.map{width:100%;height:auto;background:#0a2323;border:1px solid var(--bd);border-radius:12px;touch-action:none;display:block}
+.ed{stroke:#4d7c76;stroke-width:3}.ed.h{stroke:var(--or);stroke-width:5}.ed.p{stroke:var(--cy);stroke-width:6}
+.w{fill:var(--tx);font-size:13px;text-anchor:middle;paint-order:stroke;stroke:#0a2323;stroke-width:4px;cursor:pointer}
+.nd{stroke:#fff3;stroke-width:2}.nd.vis{stroke:var(--gr);stroke-width:4}.nd.cur{stroke:var(--or);stroke-width:5}.nt{fill:#04101f;font-weight:700;text-anchor:middle;dominant-baseline:central;pointer-events:none}
+.kpi{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:10px 0}.kpi div{background:#0a232388;border-radius:10px;padding:8px}.kpi small{color:var(--mu);display:block}.kpi b{font-size:18px;color:var(--cy)}
+.msg{padding:10px;border-radius:10px;margin:8px 0}.err{background:#f8717122;border:1px solid var(--rd)}.ok{background:#34d39922;border:1px solid var(--gr)}
+table{width:100%;border-collapse:collapse;font-size:14px}td,th{padding:6px 8px;border-bottom:1px solid var(--bd);text-align:left}
+pre{background:#0a2323;padding:10px;border-radius:8px;overflow:auto;font-size:13px;color:#b9d4ff}
+h2{margin:6px 0 12px}.mu{color:var(--mu)}code{color:var(--cy)}.opt{display:block;width:100%;text-align:left;margin:6px 0}.opt.good{border-color:var(--gr);background:#34d39922}.opt.bad{border-color:var(--rd);background:#f8717122}
+.lb{fill:#9fb4dc;font-size:11px;text-anchor:middle;pointer-events:none}
+#bg{position:fixed;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none}
+#bg{transition:opacity .5s}
+body:not([data-p=home]) #bg{opacity:.18}
+body:not([data-p=home]) .card{background:rgba(7,26,26,.9)}
+details summary{cursor:pointer;color:var(--cy)}
+.qwrap{display:grid;grid-template-columns:1fr 290px;gap:14px;align-items:start}@media(max-width:900px){.qwrap{grid-template-columns:1fr}}
+#qz{min-height:480px}.bar2{height:8px;border-radius:6px;background:#0a2323;overflow:hidden}.bar2 i{display:block;height:100%;background:linear-gradient(90deg,var(--bl),var(--cy));transition:width .3s}
+.dots{display:flex;flex-wrap:wrap;gap:6px}.dots span{width:28px;height:28px;border-radius:8px;display:grid;place-items:center;font-size:12px;background:#0a2323;border:1px solid var(--bd)}.dots .g{background:#34d39944;border-color:var(--gr)}.dots .b{background:#f8717144;border-color:var(--rd)}.dots .c{border-color:var(--cy);color:var(--cy)}
+.tag{font-size:12px;padding:2px 8px;border-radius:999px;border:1px solid var(--bd);color:var(--mu)}
+html,body{min-height:100%}body{min-height:100vh;background-attachment:fixed}main{min-height:calc(100vh - 64px)}
+#rmap{position:relative;z-index:0;background:#0a2323}.inv{filter:invert(1) hue-rotate(180deg) brightness(.85) contrast(.9)}.rec{border:1px solid var(--cy);background:linear-gradient(135deg,#14b8a622,#5eead411);border-radius:12px;padding:12px;margin:8px 0}.rec h4{margin:0 0 4px;font-size:16px;color:var(--cy)}.rec p{margin:4px 0;font-size:13px}.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.chip{font-size:12px;padding:2px 8px;border-radius:999px;border:1px solid var(--bd);color:var(--mu)}.star{color:var(--or)}tr.best td{background:#14b8a622;color:#fff}.leaflet-container{font:inherit}input{min-width:0}
+
+/* ---- polish ---- */
+:root{--r:18px;--glow:0 0 0 1px var(--bd),0 14px 36px -22px #000}
+body{letter-spacing:.005em}
+main{max-width:1260px;padding:26px 20px 70px}
+nav{padding:10px 22px;gap:4px;background:#071a1ad9;border-bottom:1px solid var(--bd)}
+nav b{display:flex;align-items:center;gap:10px;font-size:15px}
+nav b::before{content:"";width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,var(--bl),var(--cy));box-shadow:0 0 18px #14b8a688}
+nav a{padding:7px 15px;border-radius:999px;font-weight:500;transition:background .2s,color .2s}
+nav a.on{background:linear-gradient(90deg,#14b8a62e,#5eead424);color:var(--cy);box-shadow:inset 0 0 0 1px var(--bd)}
+.ph{margin:4px 0 20px}.ph h2{font-size:clamp(28px,3.6vw,40px);line-height:1.1;margin:4px 0 6px;letter-spacing:-.015em}.ph p{margin:0;max-width:640px}
+.eyebrow{font-size:12px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--cy)}
+.card{border-radius:var(--r);box-shadow:var(--glow)}
+.grid>.card{transition:transform .2s,border-color .2s}.grid>.card:hover{transform:translateY(-3px);border-color:#5eead466}
+h3{letter-spacing:-.005em}
+button,select,input{border-radius:10px;transition:border-color .15s,background .15s,transform .1s,box-shadow .15s}
+button:active:not(:disabled){transform:translateY(1px)}
+button:hover:not(:disabled){background:#14403e}
+button.pri:hover:not(:disabled){background:linear-gradient(90deg,var(--bl),var(--cy));box-shadow:0 6px 22px -6px #14b8a6aa;filter:brightness(1.06)}
+button.big{width:100%;padding:12px;font-size:15px;margin-top:12px;border-radius:12px}
+select{appearance:none;-webkit-appearance:none;padding-right:32px;background:#0f2b2b url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%235eead4' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 12px center}
+input[type=checkbox]{width:16px;height:16px;padding:0;accent-color:var(--cy);margin:0}
+input:focus-visible{outline:2px solid var(--cy);outline-offset:2px}
+label.f{display:flex;flex-direction:column;gap:5px;font-size:11px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--mu)}
+label.f select{font-size:15px;font-weight:400;letter-spacing:0;text-transform:none;color:var(--tx);width:100%}
+.seg{display:inline-flex;flex-wrap:wrap;gap:3px;padding:4px;background:#0a2323;border:1px solid var(--bd);border-radius:12px}
+.seg button{border:0;background:transparent;color:var(--mu);padding:7px 13px;border-radius:9px}
+.seg button:hover:not(:disabled){background:#ffffff12;color:#fff}
+.seg button.on{background:linear-gradient(90deg,#14b8a63d,#5eead42e);color:var(--cy);box-shadow:inset 0 0 0 1px #5eead455}
+.trow{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;margin-bottom:12px}.trow:last-child{margin-bottom:0}
+.lbl{font-size:11px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--mu);padding-bottom:12px}
+.sd{font-size:13px;flex:1;min-width:220px;padding-bottom:8px}
+.hint{font-size:13px;color:var(--cy);min-height:20px}.hint:empty{display:none}
+.wbox{margin-top:10px;padding:10px 12px;border-radius:12px;background:#0a2323;border:1px solid var(--bd)}
+.toolc{padding:16px 16px 14px}
+.sim{grid-template-columns:minmax(0,1fr) 370px;gap:18px;align-items:start}
+.mainc{display:flex;flex-direction:column;gap:14px;min-width:0}
+.side{display:flex;flex-direction:column;gap:14px;position:sticky;top:78px}
+@media(max-width:980px){.sim{grid-template-columns:1fr}.side{position:static}}
+svg.map{border-radius:var(--r);box-shadow:var(--glow);background:radial-gradient(600px 300px at 50% 40%,#0f3a38,#0a2323)}
+.acts{align-items:center;margin:0}
+.acts button{background:#0f2b2b}
+label.tg{display:inline-flex;align-items:center;gap:8px;margin-left:auto;padding:7px 12px;border:1px solid var(--bd);border-radius:10px;background:#0f2b2b;cursor:pointer}
+.ct{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:8px;font-size:14px}
+.pt{display:flex;align-items:center;gap:10px;font-weight:700;margin-bottom:12px}
+.num{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:800;background:linear-gradient(135deg,var(--bl),var(--cy));color:#04101f;flex:none}
+.rec{position:relative;overflow:hidden;border-radius:14px;margin:0}
+.rec h4{display:flex;align-items:center;gap:8px;font-size:17px}
+.rec p{line-height:1.5}
+.chip{background:#0a232399}
+.why{font-size:13px;margin-top:10px;line-height:1.5}
+.rg{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:end}
+.sw{padding:9px 12px;font-size:16px;color:var(--cy)}
+.sc{font-size:12px;margin-top:8px}
+.stp{margin-top:6px;font-size:14px;line-height:1.6;padding:10px 12px;border-radius:12px;background:#0a232388;border:1px dashed var(--bd)}
+.kpi{margin:12px 0 0}.kpi div{border:1px solid var(--bd);background:#0a232399}
+.kpi:empty{display:none}
+#alert .msg{margin:12px 0 0}
+.msg{border-radius:12px;line-height:1.5}
+table{border-radius:12px;overflow:hidden}th{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--mu);font-weight:600}
+tr:last-child td{border-bottom:0}
+/* real world */
+.ctrl{margin-bottom:16px;display:flex;flex-direction:column;gap:14px}
+.searchbar{display:flex;gap:8px;flex-wrap:wrap}
+#rq{flex:1;min-width:220px;padding:11px 14px 11px 40px;font-size:15px;border-radius:12px;background:#0a2323 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' fill='none' stroke='%235eead4' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='8' cy='8' r='6'/%3E%3Cpath d='M13 13l4 4'/%3E%3C/svg%3E") no-repeat 13px center}
+.searchbar button{padding:10px 18px;border-radius:12px}
+.auto{margin-left:auto;font-size:13px;color:var(--mu);padding:8px 12px;border-radius:999px;border:1px solid var(--bd);background:#0a232388}
+#rmsg{font-size:13px;padding:10px 14px;border-radius:12px;background:#0a232399;border:1px solid var(--bd);line-height:1.5}
+#rmap{height:min(640px,72vh);min-height:420px;border-radius:var(--r);border:1px solid var(--bd);box-shadow:var(--glow);overflow:hidden}
+.rside{display:flex;flex-direction:column;gap:6px}.rside b{margin-top:6px}
+.rside .kpi{margin:6px 0}
+.leaflet-container .leaflet-bar a,.leaflet-container .leaflet-bar a:hover{background:#0f2b2b;color:var(--tx);border-color:var(--bd)}
+.leaflet-container .leaflet-bar a:hover{color:var(--cy)}
+.leaflet-control-attribution{background:#071a1acc!important;color:var(--mu)!important}.leaflet-control-attribution a{color:var(--cy)!important}
+.leaflet-container .leaflet-tooltip{background:#0f2b2b;color:var(--tx);border-color:var(--bd)}
+/* home */
+.hero{padding:64px 0 28px}.hero h1{letter-spacing:-.02em}
+.hero button{border-radius:14px}
+
+/* ---- map details ---- */
+.layers{display:flex;flex-wrap:wrap;gap:6px}
+.layers:empty{display:none}
+.lc{display:inline-flex;align-items:center;gap:7px;padding:6px 11px;border:1px solid var(--bd);border-radius:999px;background:#0a232399;font-size:13px;cursor:pointer;user-select:none;transition:background .15s,border-color .15s}
+.lc:has(input:checked){border-color:#5eead466;background:#14b8a61f}
+.lc i{font-style:normal;font-size:11px;color:var(--mu);background:#0a2323;border-radius:999px;padding:0 7px;min-width:20px;text-align:center}
+.poi span{display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:#071a1af2;border:2px solid var(--c);font-size:14px;line-height:1;box-shadow:0 2px 8px #000a}
+.plc{background:none;border:0}
+.plc span{display:inline-block;transform:translate(-50%,-50%);white-space:nowrap;color:#fff;font-weight:700;letter-spacing:.04em;text-shadow:0 0 3px #000,0 0 8px #000,0 0 14px #000;pointer-events:none}
+.leaflet-container .leaflet-popup-content-wrapper,.leaflet-container .leaflet-popup-tip{background:#0f2b2b;color:var(--tx);border:1px solid var(--bd);box-shadow:0 8px 24px #000a}.leaflet-container .leaflet-popup-close-button{color:var(--mu)}
+.leaflet-container .leaflet-popup-content{margin:12px 14px}
+.pp{font-size:12px;color:var(--mu);margin:4px 0 10px;line-height:1.5}
+.leaflet-popup-content button{width:100%;padding:7px 10px;font-size:13px}
+.nr{margin-top:10px}.nh{font-size:13px;font-weight:600;margin-bottom:5px}
+.nb{display:flex;justify-content:space-between;gap:10px;width:100%;margin-bottom:4px;text-align:left;padding:7px 10px;font-size:13px}
+.nb span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.nb i{font-style:normal;color:var(--cy);flex:none}
+
+/* ---- bengaluru map + mobile fixes ---- */
+html{overflow-x:hidden}
+.card,.ph,.sim>*,.mainc>*,.side>*,.rmapw{min-width:0;max-width:100%}
+.card{overflow-wrap:anywhere}
+#cmp,#rcmp{overflow-x:auto}#cmp table,#rcmp table{min-width:330px}
+label.f{min-width:0}.rg select,.trow select{min-width:0;max-width:100%}
+.rmapw{display:flex;flex-direction:column;gap:8px}
+.legend{font-size:12px;color:var(--mu);line-height:1.8;padding:0 4px}
+#rq{flex:1 1 200px;min-width:0}
+.rres{display:flex;flex-direction:column;gap:6px;max-height:300px;overflow:auto}.rres:empty{display:none}
+.rr{display:flex;flex-direction:column;align-items:flex-start;gap:2px;width:100%;text-align:left;padding:9px 12px}
+.rr b{font-weight:600;overflow-wrap:anywhere}.rr small{color:var(--mu);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pb{display:flex;flex-direction:column;gap:6px}.leaflet-popup-content button{margin:0}
+.sel{background:none;border:0}.sel span{font-size:28px;line-height:1;filter:drop-shadow(0 2px 3px #000a)}
+.leaflet-tooltip.pn,.leaflet-tooltip.se{background:#071a1af0;color:#fff;border:1px solid var(--bd);font-size:11px;font-weight:600;padding:1px 6px;box-shadow:none}
+.leaflet-tooltip.se{border-color:var(--cy);color:var(--cy)}
+.leaflet-tooltip-top.se:before,.leaflet-tooltip-right.pn:before{display:none}
+#rmap:not(.zl) .leaflet-tooltip.pn{display:none}
+#rrs{margin:6px 0 4px}
+@media(max-width:640px){
+ body{font-size:14.5px}main{padding:16px 12px 56px}
+ nav{padding:8px 10px;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;gap:2px}nav::-webkit-scrollbar{display:none}
+ nav b{font-size:13px;margin-right:10px;flex:none}nav a{padding:6px 11px;font-size:14px;white-space:nowrap;flex:none}
+ .hero{padding:34px 0 16px}.hero p{font-size:16px}.hero button{width:100%}
+ .ph h2,h2{font-size:25px}.card{padding:14px}.toolc{padding:14px}
+ input,select{font-size:16px}
+ .trow{gap:10px}.trow>label.f{flex:1 1 100%}.sd{min-width:0;flex-basis:100%;padding-bottom:0}.lbl{padding-bottom:0;flex-basis:100%}
+ .seg{width:100%}.seg button{flex:1 1 auto;padding:8px 10px}
+ .acts button{flex:1 1 calc(50% - 6px)}.acts label.tg{margin-left:0;flex:1 1 100%}
+ .searchbar button{flex:1 1 100%}.auto{margin-left:0;width:100%;text-align:center}
+ .kpi b{font-size:16px}table{font-size:13px}td,th{padding:6px 5px}
+ #rmap{height:62vh;min-height:360px}#qz{min-height:0}
+ .rec h4{font-size:16px}.dots span{width:26px;height:26px}
+}
+.cpw{overflow:visible}.cp{position:absolute;left:0;top:0;width:24px;height:24px;transform:translate(-50%,-50%)}.cp i{font-style:normal;width:24px;height:24px;border-radius:50%;background:#071a1a;border:2px solid var(--c);display:grid;place-items:center;font-size:13px;box-shadow:0 2px 6px #0008}.cp em{font-style:normal;display:none;position:absolute;left:28px;top:50%;transform:translateY(-50%);white-space:nowrap;font-size:11px;font-weight:700;color:#fff;paint-order:stroke;-webkit-text-stroke:3px #071a1a;pointer-events:none}.cp.c-m i{width:28px;height:28px;border-color:#22c55e;background:#14532d}.cp.c-a i{width:9px;height:9px;font-size:0;border-width:0;background:var(--c)}.cp.c-a em{display:block;left:8px;color:#cbd5e1;font-weight:600;font-style:italic}#rmap:not(.z13) .cp:not(.c-m):not(.c-a){display:none}#rmap.z13 .cp.c-m em,#rmap.z15 .cp em{display:block}#rmap.z16 .cp.c-a{display:none}#rflt{margin:0}#rflt button{font-size:12px;padding:4px 10px}#rflt button:not(.on){opacity:.5}
+.cp.ho{display:none!important}.cp.nl em{display:none!important}.cp i,.cp em{transition:opacity .2s}tr.sel td{box-shadow:inset 0 0 0 1px var(--cy)}.flow{stroke-dasharray:14 10;animation:fl 1s linear infinite}@keyframes fl{to{stroke-dashoffset:-24}}@media(prefers-reduced-motion:reduce){.flow{animation:none}}.leaflet-container{font-family:inherit}
+</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css"></head><body>
+<nav aria-label="Main"><b>SMART ROUTE</b><a href="#home">Home</a><a href="#sim">Simulator</a><a href="#real">Real World</a><a href="#learn">Learn</a><a href="#quiz">Quiz</a><a href="#method">Method</a></nav>
+<main>
+<section class="pg" id="home"><div class="hero"><h1>Every Delivery Has a Path. Find the Smartest One.</h1><p>Explore Graph Theory. Master Algorithms. Optimize Real-World Deliveries.</p>
+<div class="row"><button class="pri" onclick="goPage('sim')">Launch Interactive Simulator</button><button onclick="goPage('learn')">Explore Learning Lab</button></div></div>
+<svg class="anim" viewBox="0 0 700 150" style="width:100%;max-width:700px;display:block;margin:auto" aria-hidden="true"><g><line x1="60" y1="75" x2="200" y2="30"/><line x1="60" y1="75" x2="200" y2="120"/><line x1="200" y1="30" x2="360" y2="75"/><line x1="200" y1="120" x2="360" y2="75"/><line x1="360" y1="75" x2="520" y2="30"/><line x1="360" y1="75" x2="520" y2="120"/><line x1="520" y1="30" x2="650" y2="75"/><line x1="520" y1="120" x2="650" y2="75"/></g>
+<g fill="#5eead4"><circle cx="60" cy="75" r="12"/><circle cx="200" cy="30" r="10"/><circle cx="200" cy="120" r="10"/><circle cx="360" cy="75" r="10"/><circle cx="520" cy="30" r="10"/><circle cx="520" cy="120" r="10"/><circle cx="650" cy="75" r="12" fill="#34d399"/></g></svg>
+<div class="grid g3" style="margin-top:28px"><div class="card"><h3>Operate a city</h3>Drag warehouses, hubs and customers. Add roads, edit distances, close roads, and run real algorithms.</div><div class="card"><h3>Watch every step</h3>Step-by-step playback with the priority queue, visited set and path reconstruction.</div><div class="card"><h3>Know when to use what</h3>Dijkstra rejects negative weights; Bellman-Ford handles them; BFS ignores weights. The app explains why.</div></div></section>
+
+<section class="pg" id="sim"><div class="ph"><span class="eyebrow">Graph lab</span><h2>Interactive Simulator</h2><p class="mu">Build a network, and the app recommends the best algorithm for it, then replays every step.</p></div>
+<div class="sim"><div class="mainc">
+<div class="card toolc"><div class="trow"><label class="f">Scenario<select id="scn"><option value="city">Logistics: city deliveries</option><option value="real">Logistics: real coordinates (Singapore)</option><option value="neural">Biology: neural pathway</option><option value="meta">Biology: metabolic pathway</option></select></label><div id="scd" class="mu sd"></div></div>
+<div class="trow"><span class="lbl">Edit</span><div class="seg" role="toolbar" aria-label="Editing mode"><button data-m="move" class="on">Move</button><button data-m="node">Add node</button><button data-m="road">Add link</button><button data-m="w">Edit weight</button><button data-m="del">Delete</button><button data-m="close">Block / unblock</button></div></div>
+<div id="hint" class="hint"></div><div id="wbox" class="wbox" style="display:none"><label>Weight <input id="wv" type="number" step="any" style="width:90px"></label> <button class="pri" id="wok">OK</button> <button id="wno">Cancel</button> <span id="wms" class="mu"></span></div></div>
+<svg class="map" id="map" viewBox="0 0 800 420" role="img" aria-label="City road graph"></svg>
+<div class="trow acts"><button id="rnd">🎲 Random graph</button><button id="rst">↺ Reset scenario</button><button id="trf">🚦 Traffic update</button><label class="tg"><input type="checkbox" id="dir">Directed roads</label></div>
+<div class="card"><div class="ct"><b>Algorithm comparison</b><span class="mu">source → destination, same graph</span></div><div id="cmp" class="mu">Press Compare to run every path algorithm on this graph.</div><button id="cbtn" style="margin-top:10px">Compare</button></div></div>
+<aside class="side">
+<div class="card"><div class="pt"><span class="num">1</span>Smart algorithm choice</div><div id="rec" class="rec" aria-live="polite"></div><div id="why" class="mu why"></div></div>
+<div class="card"><div class="pt"><span class="num">2</span>Choose your route</div><div class="rg"><label class="f">From<select id="src"></select></label><button id="swp" class="sw" title="Swap source and destination" aria-label="Swap source and destination">⇄</button><label class="f">To<select id="dst"></select></label></div><button class="pri big" id="run">Run recommended algorithm</button><div id="alert"></div></div>
+<div class="card"><div class="pt"><span class="num">3</span>Watch it work</div><div class="trow"><div class="seg"><button id="pv" aria-label="Previous step">◀</button><button id="pl">▶ Play</button><button id="nx" aria-label="Next step">▶|</button><button id="end">End</button></div><select id="spd" aria-label="Playback speed"><option value="1200">Slow</option><option value="700" selected>Normal</option><option value="250">Fast</option></select></div><div class="mu sc">Shortcuts: ← → step, Space play/pause</div><div class="kpi" id="kp"></div><div id="stp" class="mu stp">Run an algorithm to see each step here.</div></div>
+</aside></div></section>
+
+<section class="pg" id="real"><div class="ph"><span class="eyebrow">Live map · Bengaluru</span><h2>Real World Mode</h2><p class="mu">Browse JAIN Global Campus, DSU, Jakkasandra and Harohalli, plus the Namma Metro Green Line. Search nearby shops, bakeries, restaurants, PGs and medical stores, then route between two places.</p></div>
+<div class="card ctrl"><div class="searchbar"><input id="rq" placeholder="Search a shop, medical store, PG or area" aria-label="Search place" autocomplete="off"><button class="pri" id="rsb">Search</button></div>
+<div id="rres" class="rres" aria-live="polite"></div>
+<div class="trow"><label class="f">Travel mode<select id="rmd"><option value="drive">Driving (one-way aware)</option><option value="walk">Walking</option></select></label><label class="f">Map style<select id="rsty"><option value="1" selected>Streets (Esri · default)</option><option value="2">OpenStreetMap</option><option value="3">Humanitarian OpenStreetMap</option><option value="4">Satellite (Esri)</option><option value="5">Terrain</option></select></label><div class="auto"><span class="star">★</span> Algorithm is chosen automatically</div></div>
+<div id="rmsg" class="mu">Esri Streets is the default (no CARTO API key). Zoom to 14+ for the independent OpenStreetMap road overlay and 16+ for live mapped shops, bakeries, medical stores, PGs, parks and transit. Use the campus gate pin for road access.</div></div>
+
+<div class="sim"><div class="rmapw"><div id="rflt" class="chips"></div><label class="tg" style="margin:0 0 6px 0"><input type="checkbox" id="rroads" checked> Show local roads from OpenStreetMap</label><div id="rmap"></div><div class="legend">🚇 Green Line metro · 🛍️ Shops · 🛏️ PGs · 🏥 Hospitals · 🍽️ Food · 🛕 Temples · 🌳 Parks · 🎓 Colleges · 🚌 Transit. Zoom to 14+ for road geometry and 16+ for live OpenStreetMap listings: 🛒 Groceries · 💊 Medical · 🛏️ PG &amp; stays · 🍴 Food &amp; bakeries · 🏬 Shops · 🏫 Services · 🌳 Parks &amp; lakes</div></div><div class="card rside"><b>Route results</b><div id="rrec" class="rec" aria-live="polite"><p class="mu">Tap the map (or a shop and choose “Set as start”), then pick a destination. Dijkstra, A* and BFS are tested and the best one is kept.</p></div><div class="kpi" id="rkp"></div><div id="rcmp" style="overflow:auto"></div><div id="rgraph" style="overflow:auto;margin:8px 0"></div><button id="rrs">✕ Clear start and destination</button><b>Real-world uses</b><ul class="mu" style="font-size:13px;padding-left:18px"><li>Delivery and ride-hailing route planning</li><li>Ambulance and fire-brigade dispatch</li><li>Evacuation and disaster-relief planning</li><li>Public-health access: distance to clinics</li></ul></div></div></section>
+<section class="pg" id="learn"><h2>Learn</h2><div id="cpt" class="grid g3"></div>
+<div class="card" style="margin:14px 0"><b>Which algorithm should I use?</b><div class="bar" style="margin-top:8px"><label>Goal <select id="wg"><option value="path">Route between two points</option><option value="all">Connect everything cheaply</option><option value="visit">Explore or check connectivity</option></select></label><label>Weights <select id="ww"><option value="no">No weights (count hops)</option><option value="pos">All non-negative</option><option value="neg">Some negative</option></select></label><label>Coordinates known <select id="wc"><option value="y">Yes</option><option value="n">No</option></select></label></div><div id="wr" class="msg ok"></div></div>
+<div class="bar" id="flt" role="toolbar" aria-label="Filter algorithms"></div><div id="algs" class="grid g3"></div>
+<div class="card" style="margin-top:14px"><b>Shortest path is not multi-stop routing.</b> Dijkstra finds the best route between two points. Visiting many customers and returning (TSP/VRP) is NP-hard: no known fast exact algorithm, so logistics uses heuristics.</div>
+<div class="card" style="margin-top:14px;overflow:auto"><b>Cheat sheet</b><div id="cht"></div></div></section>
+
+<section class="pg" id="quiz"><h2>Knowledge Check</h2><div class="qwrap"><div id="qz" class="card"></div><aside id="qs" class="card"></aside></div></section>
+
+<section class="pg" id="method"><h2>Project &amp; Methodology</h2>
+<div class="grid g3"><div class="card"><b>Aim</b><p class="mu">Teach graph theory by letting students operate a network (logistics or biology), predict what an algorithm will do, then verify it step by step.</p></div>
+<div class="card"><b>Learning outcomes</b><ol class="mu" style="padding-left:18px;margin:6px 0 0"><li>Model a real system as a weighted graph.</li><li>Choose an algorithm from the problem’s constraints.</li><li>Trace its steps and state its complexity.</li><li>Explain why it fails or succeeds (negative weights, disconnected graphs).</li></ol></div>
+<div class="card"><b>Who it is for</b><p class="mu">First- and second-year computing, mathematics and life-science students. No prior graph theory is needed.</p></div></div>
+<div class="card" style="margin-top:14px;overflow:auto"><b>Experiential learning cycle (Kolb)</b><table><tr><th>Stage</th><th>Where in the app</th></tr><tr><td>Concrete experience</td><td>Build or edit a scenario in the Simulator: add nodes, links and weights.</td></tr><tr><td>Reflective observation</td><td>Replay each algorithm step by step: queue, visited set, path.</td></tr><tr><td>Abstract conceptualization</td><td>Learn page: definitions, pseudocode, complexity and the algorithm chooser.</td></tr><tr><td>Active experimentation</td><td>Change weights, block links, add negative weights, then take the Quiz.</td></tr></table></div>
+<div class="card" style="margin-top:14px;overflow:auto"><b>Scenarios</b><table><tr><th>Scenario</th><th>Vertices</th><th>Edges</th><th>Weights</th><th>Question it answers</th></tr><tr><td>City deliveries</td><td>Warehouse, hubs, customers</td><td>Roads</td><td>Distance</td><td>Fastest route; cheapest network</td></tr><tr><td>Real coordinates</td><td>Nine Singapore landmarks</td><td>Roads</td><td>Haversine km × 1.3</td><td>Real-distance routing</td></tr><tr><td>Neural pathway</td><td>Neurons</td><td>Synapses (directed)</td><td>Delay, ms (illustrative)</td><td>Fastest reflex; fewest synapses; minimal wiring</td></tr><tr><td>Metabolic pathway</td><td>Metabolites</td><td>Reactions (directed)</td><td>Energy change (illustrative, some negative)</td><td>Cheapest pathway where Dijkstra is invalid</td></tr><tr><td>Real World Mode</td><td>Intersections from OpenStreetMap</td><td>Road segments (one-way aware)</td><td>Length in metres</td><td>Real routes for any place; Dijkstra vs A* vs BFS</td></tr></table></div>
+<div class="grid g3" style="margin-top:14px"><div class="card"><b>Implementation</b><p class="mu">Each algorithm records its own steps, so playback shows real computation. Dijkstra and A* use a binary heap. Inputs are validated: negative weights block Dijkstra and A*, Bellman-Ford reports negative cycles, and unreachable targets and disconnected graphs are reported. Time, cost and fuel are derived from distance. The graph is saved in <code>localStorage</code>, and its nodes/edges model maps to a future REST backend. The algorithm is never picked by hand: the app inspects the graph (negative weights, equal weights, how well node positions predict distance, density) and recommends one, with the reason. In Real World Mode it runs Dijkstra, A* and BFS and keeps the cheapest optimal one.</p></div>
+<div class="card"><b>Assessment</b><p class="mu">A 12-question quiz (Easy, Medium, Hard) with hints, streak points, shuffled order and a review of mistakes. It covers shortest paths, spanning trees, traversal, complexity and the biology scenarios.</p></div>
+<div class="card"><b>Limitations</b><p class="mu">Biology weights are illustrative, not measured. Prim uses a simple scan to keep steps visible. Multi-stop routing (TSP/VRP) is not implemented. Real World Mode needs internet access, covers Bengaluru, and can only find places that exist in OpenStreetMap (a shop nobody has mapped will not appear). Data stays in this browser.</p></div></div>
+<div class="card" style="margin-top:14px"><b>Verification</b><p class="mu">The self-test runs 300 random graphs per check against an independent Floyd–Warshall implementation, and compares Prim with Kruskal.</p><button id="tst" class="pri">Run algorithm self-tests</button><div id="tout"></div></div>
+<div class="card" style="margin-top:14px"><b>Map data quality &amp; limits</b><p class="mu">Green Line station order and the 32-stop route have been updated. JAIN Global Campus is shown with separate main-gate and campus-footprint references; the interior point is not a road entrance. DSU is positioned using a GPS reference published by the university. Other curated citywide colleges, hospitals, restaurants, temples and parks are area-reference pins unless their popup says otherwise. The earlier auto-generated random business offsets were removed because they were not verified addresses. Local businesses are loaded from OpenStreetMap at zoom 16+, and road geometry can be overlaid from zoom 14+. Places absent from OpenStreetMap or without a dependable public location cannot be pinned accurately.</p></div><div class="card" style="margin-top:14px"><b>Real-world applications</b><ul class="mu" style="padding-left:18px;margin:6px 0 0"><li><b>Navigation and delivery:</b> road networks are weighted graphs, and routing engines use Dijkstra/A*-style searches (usually with speed-ups).</li><li><b>Computer networks:</b> the OSPF routing protocol runs Dijkstra on the network graph.</li><li><b>Infrastructure design:</b> minimum spanning trees (Prim, Kruskal) cut the cost of cable, pipe and road layouts.</li><li><b>Emergency services:</b> shortest paths on one-way-aware road graphs for dispatch.</li><li><b>Epidemiology:</b> BFS models spread by contact generations.</li><li><b>Biology:</b> neural circuits and metabolic networks are analysed as directed graphs.</li></ul></div><div class="card" style="margin-top:14px"><b>References</b><ol class="mu" style="padding-left:18px;margin:6px 0 0"><li>Cormen, Leiserson, Rivest, Stein. <i>Introduction to Algorithms</i>. MIT Press.</li><li>Dijkstra, E. W. (1959). A note on two problems in connexion with graphs. <i>Numerische Mathematik</i>, 1.</li><li>Bellman, R. (1958). On a routing problem. <i>Quarterly of Applied Mathematics</i>, 16.</li><li>Kruskal, J. B. (1956). On the shortest spanning subtree of a graph. <i>Proc. AMS</i>, 7.</li><li>Prim, R. C. (1957). Shortest connection networks and some generalizations. <i>Bell System Technical Journal</i>, 36.</li><li>Hart, Nilsson, Raphael (1968). A formal basis for the heuristic determination of minimum cost paths. <i>IEEE Trans. SSC</i>, 4(2).</li><li>Kolb, D. A. (1984). <i>Experiential Learning</i>. Prentice Hall.</li></ol></div></section>
+</main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const ALG={dijkstra:['Dijkstra','Single-source shortest path on NON-NEGATIVE weights. Uses a priority queue; finalizes the closest unvisited vertex each round.','Fails with negative edges.','O((V+E) log V) with the binary heap used here','dist[s]=0; PQ={s}\nwhile PQ: u=extract-min\n  for each edge (u,v,w):\n    if dist[u]+w<dist[v]: update, push'],
+astar:['A*','Like Dijkstra but ranks vertices by f = g + h, where h estimates the remaining cost (here: straight-line map distance scaled by the cheapest weight per pixel, which never overestimates). Usually settles fewer vertices.','Needs non-negative weights and an admissible heuristic; with h = 0 it becomes Dijkstra.','O(E log V) worst case; fewer expansions in practice','open={s}; g[s]=0\nwhile open: u=min f=g+h\n  if u==goal: stop\n  for edge (u,v,w):\n    if g[u]+w<g[v]:\n      g[v]=g[u]+w; push f=g[v]+h(v)'],
+bellman:['Bellman-Ford','Shortest paths allowing NEGATIVE weights; detects negative cycles by a V-th relaxation round.','Slower than Dijkstra; no shortest path exists with a reachable negative cycle (any negative undirected road is one).','O(V·E)','repeat V-1 times:\n  for each edge (u,v,w): relax\nif any edge still relaxes:\n  negative cycle'],
+bfs:['BFS','Fewest HOPS in an unweighted graph; explores level by level with a queue.','Ignores weights, so the route can be longer in km.','O(V+E)','queue={s}\nwhile queue: u=dequeue\n  for unvisited neighbor v:\n    mark, parent[v]=u, enqueue'],
+dfs:['DFS','Reachability, connectivity and cycle detection; dives deep using a stack.','Path found is NOT guaranteed shortest.','O(V+E)','stack={s}\nwhile stack: u=pop\n  if unvisited: mark\n  push neighbors'],
+prim:['Prim (MST)','Grows one tree from a start vertex, always adding the cheapest edge leaving the tree. Models cheapest road network connecting all sites.','Needs a connected undirected graph (otherwise a forest).','O(E log V) with a heap; this demo uses the simple O(V·E) scan so every step is visible','T={s}\nwhile edges cross T:\n  add cheapest crossing edge'],
+kruskal:['Kruskal (MST)','Sorts all edges and adds each one that does not close a cycle (union-find).','Needs a connected undirected graph (otherwise a forest).','O(E log E)','sort edges by weight\nfor each edge (u,v):\n  if find(u)!=find(v): add, union']};
+const sample=()=>({nodes:[['W',80,210,'Warehouse'],['A',230,80,'Hub'],['B',230,340,'Hub'],['C',400,210,'Hub'],['D',560,90,'Customer'],['E',560,330,'Customer'],['F',720,210,'Customer']].map(([id,x,y,t])=>({id,x,y,t})),edges:[['W','A',4],['W','B',2],['A','B',1],['A','C',5],['B','C',8],['B','E',10],['C','D',2],['C','E',3],['D','F',6],['E','F',3],['D','E',4]].map(([a,b,w])=>({a,b,w,x:0}))});
+let G;try{G=JSON.parse(localStorage.getItem('sr_graph'))}catch(e){}if(!G||!G.nodes)G=sample();
+let forceAlg=null,mode='move',R=null,cur=-1,timer=null,pend=null,drag=null;
+const save=()=>{try{localStorage.setItem('sr_graph',JSON.stringify(G))}catch(e){}};
+const nd=id=>G.nodes.find(n=>n.id==id),col={Warehouse:'#fbbf24',Hub:'#5eead4',Customer:'#34d399'};
+// ---- algorithms ----
+class Heap{constructor(){this.a=[]}push(x){const a=this.a;a.push(x);let i=a.length-1;while(i){const p=(i-1)>>1;if(a[p][0]<=a[i][0])break;[a[p],a[i]]=[a[i],a[p]];i=p}}pop(){const a=this.a,t=a[0],l=a.pop();if(a.length){a[0]=l;let i=0;for(;;){let m=i,c=2*i+1;if(c<a.length&&a[c][0]<a[m][0])m=c;if(++c<a.length&&a[c][0]<a[m][0])m=c;if(m==i)break;[a[m],a[i]]=[a[i],a[m]];i=m}}return t}}
+function run(alg,s,d,dir){
+ const E=G.edges,N=G.nodes.map(n=>n.id),S=[],prev={},pe={};
+ const P=(c,v,q,hi,note,keep)=>S.push({c,v:[...v],q,hi:hi||[],note,keep:keep?[...keep]:[]});
+ const nb=u=>{const r=[];E.forEach((e,i)=>{if(e.x)return;if(e.a==u)r.push([e.b,e.w,i]);else if(!dir&&e.b==u)r.push([e.a,e.w,i])});return r};
+ const neg=E.some(e=>!e.x&&e.w<0);
+ if(alg=='dijkstra'){if(neg)return{err:'Dijkstra cannot be used: the graph has a negative edge weight. It would finalize vertices too early and can return wrong routes. Use Bellman-Ford.'};
+  const dist={};N.forEach(n=>dist[n]=Infinity);dist[s]=0;let h=new Heap(),vis=[],done={};h.push([0,s]);const q=()=>[...h.a].sort((a,b)=>a[0]-b[0]).map(x=>x[1]+':'+x[0]).join(', ')||'∅';
+  while(h.a.length){const[du,u]=h.pop();if(done[u])continue;done[u]=1;vis.push(u);P(u,vis,q(),[],`Pop ${u} (dist ${du}) and finalize it.`);if(u==d)break;
+   for(const[v,w,i]of nb(u))if(!done[v]&&du+w<dist[v]){dist[v]=du+w;prev[v]=u;pe[v]=i;h.push([dist[v],v]);P(u,vis,q(),[i],`Relax ${u}→${v}: new dist ${dist[v]}.`)}}
+ }else if(alg=='astar'){if(neg)return{err:'A* needs non-negative weights, like Dijkstra. Use Bellman-Ford.'};
+ let k=Infinity;E.forEach(e=>{if(e.x)return;const a=nd(e.a),b=nd(e.b),l=Math.hypot(a.x-b.x,a.y-b.y);if(l>0)k=Math.min(k,e.w/l)});if(!isFinite(k))k=0;
+ const Tg=nd(d),hf=id=>{const n=nd(id);return k*Math.hypot(n.x-Tg.x,n.y-Tg.y)},g={},h=new Heap(),done={},vis=[];N.forEach(n=>g[n]=Infinity);g[s]=0;h.push([hf(s),s]);
+ const q=()=>[...h.a].sort((a,b)=>a[0]-b[0]).map(x=>x[1]+':'+x[0].toFixed(1)).join(', ')||'∅';
+ while(h.a.length){const[,u]=h.pop();if(done[u])continue;done[u]=1;vis.push(u);P(u,vis,q(),[],`Pop ${u} (g=${g[u]}, f=g+h=${(g[u]+hf(u)).toFixed(1)}).`);if(u==d)break;
+  for(const[v,w,i]of nb(u))if(!done[v]&&g[u]+w<g[v]){g[v]=g[u]+w;prev[v]=u;pe[v]=i;h.push([g[v]+hf(v),v]);P(u,vis,q(),[i],`Relax ${u}→${v}: g=${g[v]}.`)}}
+}else if(alg=='bellman'){const dist={};N.forEach(n=>dist[n]=Infinity);dist[s]=0;const arcs=[];E.forEach((e,i)=>{if(e.x)return;arcs.push([e.a,e.b,e.w,i]);if(!dir)arcs.push([e.b,e.a,e.w,i])});
+  const T=()=>N.map(n=>n+'='+(dist[n]==Infinity?'∞':dist[n])).join('  '),F=()=>N.filter(n=>dist[n]<Infinity);
+  for(let r=1;r<=N.length;r++){let ch=false;for(const[u,v,w,i]of arcs)if(dist[u]+w<dist[v]){if(r==N.length)return{err:'Negative cycle detected: shortest distances are undefined. '+(dir?'':'(In an undirected graph any negative road is a negative cycle — enable Directed roads.)')};dist[v]=dist[u]+w;prev[v]=u;pe[v]=i;ch=true;P(u,F(),T(),[i],`Round ${r}: relax ${u}→${v} = ${dist[v]}.`)}if(!ch){P(s,F(),T(),[],`Round ${r}: no change — done early.`);break}}
+ }else if(alg=='bfs'){let qu=[s],vis=[s];while(qu.length){const u=qu.shift();P(u,vis,qu.join(', ')||'∅',[],`Dequeue ${u}.`);if(u==d)break;for(const[v,w,i]of nb(u))if(!vis.includes(v)){vis.push(v);prev[v]=u;pe[v]=i;qu.push(v);P(u,vis,qu.join(', '),[i],`Discover ${v} from ${u}.`)}}
+ }else if(alg=='dfs'){let st=[[s,null,null]],vis=[];while(st.length){const[u,p,i]=st.pop();if(vis.includes(u))continue;vis.push(u);prev[u]=p;pe[u]=i;P(u,vis,st.map(x=>x[0]).join(', ')||'∅',i==null?[]:[i],`Pop ${u}, mark visited.`);if(u==d)break;for(const[v,w,j]of nb(u).reverse())if(!vis.includes(v))st.push([v,u,j])}
+ }else if(alg=='prim'){const inT=[s],keep=[];P(s,inT,'tree={'+s+'}',[],`Start the tree at ${s}.`,keep);
+  for(;;){let b=null;E.forEach((e,i)=>{if(e.x)return;const a=inT.includes(e.a),c=inT.includes(e.b);if(a!=c&&(!b||e.w<b.w))b={w:e.w,i,n:a?e.b:e.a}});if(!b)break;inT.push(b.n);keep.push(b.i);const e=E[b.i];P(b.n,inT,'tree={'+inT.join(',')+'}',[b.i],`Cheapest crossing edge ${e.a}–${e.b} (${b.w}); add ${b.n}.`,keep)}
+  return fin(S,null,keep,inT.length==N.length)
+ }else{const par={};N.forEach(n=>par[n]=n);const f=x=>par[x]==x?x:(par[x]=f(par[x])),keep=[];
+  [...E.keys()].filter(i=>!E[i].x).sort((x,y)=>E[x].w-E[y].w).forEach(i=>{const e=E[i],ra=f(e.a),rb=f(e.b);if(ra!=rb){par[ra]=rb;keep.push(i);P(e.a,[],'',[i],`Add ${e.a}–${e.b} (${e.w}): joins two components.`,keep)}else P(e.a,[],'',[i],`Skip ${e.a}–${e.b} (${e.w}): would close a cycle.`,keep)});
+  return fin(S,null,keep,keep.length==N.length-1)}
+ if(d!=s&&prev[d]===undefined)return{steps:S,unreach:true};
+ const pathE=[],nodes=[d];let x=d;while(x!=s){pathE.unshift(pe[x]);x=prev[x];nodes.unshift(x)}
+ return fin(S,nodes,pathE,true)}
+function fin(S,nodes,pathE,conn){return{steps:S,nodes,pathE,conn,total:pathE.reduce((a,i)=>a+G.edges[i].w,0)}}
+// ---- render ----
+function draw(){const dir=$('#dir').checked,st=R&&cur>=0?R.steps[cur]:null,last=R&&R.pathE&&cur==R.steps.length-1;let h='<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6ee7b7"/></marker></defs>';
+ G.edges.forEach((e,i)=>{const a=nd(e.a),b=nd(e.b);if(!a||!b)return;const dx=b.x-a.x,dy=b.y-a.y,L=Math.hypot(dx,dy)||1,ex=b.x-dx/L*(dir?24:0),ey=b.y-dy/L*(dir?24:0);
+  const p=(st&&st.keep.includes(i))||(last&&R.pathE.includes(i)),hi=st&&st.hi.includes(i);
+  h+=`<g data-e="${i}"><line x1="${a.x}" y1="${a.y}" x2="${ex}" y2="${ey}" class="ed ${p?'p':hi?'h':''}" ${e.x?'stroke-dasharray="4 8" opacity=".35"':''} ${dir?'marker-end="url(#ar)"':''}/><line x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}" stroke="transparent" stroke-width="16"/><text class="w" x="${(a.x+b.x)/2}" y="${(a.y+b.y)/2-6}">${e.x?'✕ ':''}${e.w}</text></g>`});
+ G.nodes.forEach(n=>{const c=st&&st.c==n.id?'cur':st&&st.v.includes(n.id)?'vis':'';h+=`<g data-n="${n.id}" style="cursor:pointer" tabindex="0" aria-label="${n.t} ${n.id}"><circle class="nd ${c}" cx="${n.x}" cy="${n.y}" r="20" fill="${col[n.t]}"/><text class="nt" x="${n.x}" y="${n.y}">${n.id}</text>${n.name?`<text class="lb" x="${n.x}" y="${n.y+34}">${n.name}</text>`:''}</g>`});
+ if(last&&R.nodes&&R.nodes.length>1){const d=R.nodes.map((id,k)=>(k?'L':'M')+nd(id).x+' '+nd(id).y).join(' ');h+=`<circle r="9" fill="#fff" stroke="#22d3ee" stroke-width="3"><animateMotion dur="${Math.max(2,R.nodes.length*1.2)}s" repeatCount="indefinite" path="${d}"/></circle>`}
+ $('#map').innerHTML=h;const dd=$('#stp');
+ if(st)dd.innerHTML=`<b>Step ${cur+1}/${R.steps.length}</b><br>${st.note}<br><span class="mu">Visited:</span> ${st.v.join(', ')||'–'}<br><span class="mu">Queue/Table:</span> ${st.q||'–'}`;
+ if(last)showRes();else if(R)kpi(null);$('#pv').disabled=!R||cur<=0;$('#nx').disabled=!R||cur>=R.steps.length-1}
+function kpi(t,h){const k=SC[scn].kp,rows=t==null?k(0,0).map(r=>[r[0],'–']):k(t,h).map(r=>[r[0],Number.isInteger(r[1])?r[1]:(+r[1]).toFixed(2)]);$('#kp').innerHTML=rows.map(r=>`<div><small>${r[0]}</small><b>${r[1]}</b></div>`).join('')}
+function showRes(){kpi(R.total,R.nodes?R.nodes.length-1:R.pathE.length);const a=curAlg(),mst=a=='prim'||a=='kruskal';$('#alert').innerHTML=`<div class="msg ${R.conn?'ok':'err'}">${mst?(R.conn?'Spanning tree built: total infrastructure weight '+R.total+'.':'Graph is disconnected: result is a spanning forest ('+R.pathE.length+' edges), not a single tree.'):'Route: '+R.nodes.join(' → ')+(a=='bfs'?` (${R.nodes.length-1} hops, not necessarily shortest by distance)`:a=='dfs'?' (valid path, not guaranteed shortest)':'')}</div>`}
+function fill(){const o=G.nodes.map(n=>`<option>${n.id}</option>`).join(''),s=$('#src').value,d=$('#dst').value;$('#src').innerHTML=o;$('#dst').innerHTML=o;$('#src').value=nd(s)?s:G.nodes[0]?.id;$('#dst').value=nd(d)?d:G.nodes[G.nodes.length-1]?.id}
+function clr(){clearInterval(timer);timer=null;$('#pl').textContent='▶ Play';R=null;cur=-1;$('#alert').innerHTML='';$('#stp').textContent='Run an algorithm to see each step here.';kpi(null)}
+function change(){forceAlg=null;clr();save();fill();showRec();draw()}
+function go(){clr();const a=curAlg(),s=$('#src').value,d=$('#dst').value;
+ if(!G.nodes.length){$('#alert').innerHTML='<div class="msg err">The graph is empty. Add nodes or generate a random graph.</div>';return}
+ if(!nd(s)||!nd(d)){$('#alert').innerHTML='<div class="msg err">Select a valid source and destination.</div>';return}
+ const r=run(a,s,d,$('#dir').checked);if(r.err){$('#alert').innerHTML=`<div class="msg err">${r.err}</div>`;draw();return}
+ if(r.unreach){R=r;R.pathE=null;cur=r.steps.length-1;$('#alert').innerHTML=`<div class="msg err">${d} is unreachable from ${s}: the graph is disconnected (or roads are closed/one-way).</div>`;draw();return}
+ R=r;cur=0;draw()}
+function stepTo(n){if(!R)return;cur=Math.max(0,Math.min(R.steps.length-1,n));draw()}
+// ---- editing ----
+function pt(e){const m=$('#map'),p=m.createSVGPoint();p.x=e.clientX;p.y=e.clientY;return p.matrixTransform(m.getScreenCTM().inverse())}
+function nextId(){for(let i=65;i<91;i++){const c=String.fromCharCode(i);if(!nd(c))return c}return 'N'+(G.nodes.length+1)}
+function askW(def,msg){return new Promise(res=>{const b=$('#wbox'),i=$('#wv');b.style.display='block';$('#wms').textContent=msg||'Negative weights are allowed (try Bellman-Ford).';i.value=def;i.focus();const done=v=>{b.style.display='none';$('#wok').onclick=$('#wno').onclick=i.onkeydown=null;res(v)};$('#wok').onclick=()=>{const n=Number(i.value);if(i.value.trim()===''||!isFinite(n)){$('#wms').textContent='Enter a valid number.';return}done(n)};$('#wno').onclick=()=>done(null);i.onkeydown=e=>{if(e.key=='Enter')$('#wok').click();if(e.key=='Escape')done(null)}})}
+const HINT={move:'Drag nodes to reposition them.',node:'Click empty map space to add a node.',road:'Click a first node, then a second node, to build a road between them.',w:'Click a road to change its weight.',del:'Click a node or road to delete it.',close:'Click a road to close or reopen it (closed roads are ignored by algorithms).'};
+const setHint=t=>{$('#hint').textContent=t||HINT[mode]};
+$('#map').addEventListener('pointerdown',ev=>{const n=ev.target.closest('[data-n]'),e=ev.target.closest('[data-e]'),p=pt(ev);
+ if(mode=='move'&&n){drag=n.dataset.n;$('#map').setPointerCapture(ev.pointerId);return}
+ if(mode=='node'&&!n&&!e){if(G.nodes.length>=26){$('#alert').innerHTML='<div class="msg err">Maximum 26 nodes.</div>';return}G.nodes.push({id:nextId(),x:Math.round(p.x),y:Math.round(p.y),t:'Customer'});change();return}
+ if(mode=='road'&&n){const id=n.dataset.n;if(!pend){pend=id;n.querySelector('circle').setAttribute('stroke','#fff');setHint('Now click the second node to finish the road from '+id+'.');return}
+  if(pend==id){pend=null;draw();return}const a=pend;pend=null;askW(5,'Weight of road '+a+' to '+id).then(w=>{if(w!==null){const x=G.edges.find(q=>(q.a==a&&q.b==id)||(q.a==id&&q.b==a));x?x.w=w:G.edges.push({a,b:id,w,x:0})}setHint();change()});return}
+ if(mode=='del'){if(n){const id=n.dataset.n;G.nodes=G.nodes.filter(q=>q.id!=id);G.edges=G.edges.filter(q=>q.a!=id&&q.b!=id);change()}else if(e){G.edges.splice(+e.dataset.e,1);change()}return}
+ if(mode=='w'&&e){const i=+e.dataset.e;askW(G.edges[i].w).then(w=>{if(w!==null){G.edges[i].w=w;change()}});return}
+ if(mode=='close'&&e){const x=G.edges[+e.dataset.e];x.x=x.x?0:1;change()}});
+$('#map').addEventListener('pointermove',ev=>{if(!drag)return;const p=pt(ev),n=nd(drag);n.x=Math.max(25,Math.min(775,Math.round(p.x)));n.y=Math.max(25,Math.min(395,Math.round(p.y)));draw()});
+$('#map').addEventListener('pointerup',()=>{if(drag){drag=null;change()}});
+$$('[data-m]').forEach(b=>b.onclick=()=>{mode=b.dataset.m;pend=null;setHint();$$('[data-m]').forEach(x=>x.classList.toggle('on',x==b));draw()});
+$('#rnd').onclick=()=>{const n=8,ids='ABCDEFGH'.split(''),ns=[];for(const id of ids){let t=0,x,y;do{x=60+Math.random()*680;y=50+Math.random()*320;t++}while(t<60&&ns.some(q=>Math.hypot(q.x-x,q.y-y)<110));ns.push({id,x:Math.round(x),y:Math.round(y),t:id=='A'?'Warehouse':id<'D'?'Hub':'Customer'})}
+ const ed=[],W=(a,b)=>Math.max(1,Math.round(Math.hypot(a.x-b.x,a.y-b.y)/30));for(let i=1;i<n;i++){const j=Math.floor(Math.random()*i);ed.push({a:ns[i].id,b:ns[j].id,w:W(ns[i],ns[j]),x:0})}
+ for(let k=0;k<5;k++){const a=ns[Math.floor(Math.random()*n)],b=ns[Math.floor(Math.random()*n)];if(a!=b&&!ed.some(q=>(q.a==a.id&&q.b==b.id)||(q.a==b.id&&q.b==a.id)))ed.push({a:a.id,b:b.id,w:W(a,b),x:0})}G={nodes:ns,edges:ed};change()};
+$('#rst').onclick=()=>{G=SC[scn].G();change()};
+$('#trf').onclick=()=>{G.edges.forEach(e=>{if(e.w>0&&Math.random()<.4)e.w=Math.max(1,Math.round(e.w*(1+Math.random()*.8)))});change();$('#alert').innerHTML='<div class="msg ok">Traffic update applied: some roads are now slower. Re-run to see if the best route changed.</div>'};
+$('#run').onclick=go;$('#nx').onclick=()=>stepTo(cur+1);$('#pv').onclick=()=>stepTo(cur-1);$('#end').onclick=()=>{if(R)stepTo(R.steps.length-1)};
+$('#pl').onclick=()=>{if(!R)return go();if(timer){clearInterval(timer);timer=null;$('#pl').textContent='▶ Play';return}if(cur>=R.steps.length-1)cur=0;$('#pl').textContent='❚❚ Pause';timer=setInterval(()=>{if(cur>=R.steps.length-1){clearInterval(timer);timer=null;$('#pl').textContent='▶ Play';return}stepTo(cur+1)},+$('#spd').value)};
+// ---- automatic algorithm recommendation (simulator) ----
+function gstats(){const dir=$('#dir').checked,E=G.edges.filter(e=>!e.x),V=G.nodes.length,ws=E.map(e=>e.w),neg=ws.some(w=>w<0),uniform=ws.length>0&&ws.every(w=>w==ws[0]),rs=[];
+ E.forEach(e=>{const a=nd(e.a),b=nd(e.b);if(!a||!b)return;const l=Math.hypot(a.x-b.x,a.y-b.y);if(l>0&&e.w>0)rs.push(e.w/l)});
+ let tight=0;if(rs.length&&!neg){const mn=Math.min(...rs);tight=mn/(rs.reduce((a,b)=>a+b,0)/rs.length)}
+ return{dir,V,m:E.length,closed:G.edges.length-E.length,neg,uniform,tight,density:V>1?E.length/(V*(V-1)/2):0,lo:ws.length?Math.min(...ws):0,hi:ws.length?Math.max(...ws):0}}
+function recommend(goal){const g=gstats(),pc=Math.round(g.tight*100),facts=[g.V+' vertices',g.m+' open roads'+(g.closed?' ('+g.closed+' closed)':''),g.dir?'directed':'undirected',g.m?'weights '+g.lo+' to '+g.hi:'no weights',g.neg?'negative weights: yes':'negative weights: no'];
+ if(goal=='tree'){facts.push('density '+Math.round(g.density*100)+'%');const dense=g.density>=.5;
+  return{alg:dense?'prim':'kruskal',facts,why:dense?`This network is dense (${Math.round(g.density*100)}% of all possible roads exist). <b>Prim</b> grows one tree from a single site and copes well with many edges.`:`This network is sparse (${Math.round(g.density*100)}% of all possible roads exist). <b>Kruskal</b> sorts the few edges once and adds each one that does not close a cycle.`+(g.dir?' Spanning trees ignore direction, so roads are treated as two-way.':'')}}
+ if(goal=='visit')return{alg:'dfs',facts,why:'You only need to know what can be reached, not the cheapest way. <b>DFS</b> answers that in O(V+E) with a stack. The path it shows is valid but not guaranteed to be the shortest.'};
+ if(g.neg)return{alg:'bellman',facts,why:'A road has a <b>negative weight</b>, so Dijkstra and A* would finalize vertices too early and can return wrong routes. <b>Bellman-Ford</b> relaxes every edge repeatedly and stays correct.'+(g.dir?'':' This graph is undirected, so any negative road forms a negative cycle: switch on <b>Directed roads</b> for a meaningful answer.')};
+ if(g.uniform){facts.push('all weights equal');return{alg:'bfs',facts,why:`Every open road has the same weight (${g.lo}), so the cheapest route is simply the one with the fewest hops. <b>BFS</b> finds it in O(V+E) with no priority queue.`}}
+ facts.push('map fit '+pc+'%');
+ if(g.tight>=.6&&g.V>=5)return{alg:'astar',facts,why:`Weights are non-negative and node positions predict road cost well (map fit ${pc}%), so straight-line distance is a safe, informative estimate. <b>A*</b> uses it to settle fewer vertices than Dijkstra and still returns the shortest route.`};
+ return{alg:'dijkstra',facts,why:`Weights are non-negative, so the shortest route is guaranteed. Road weights do not follow map distance closely (map fit ${pc}%)${g.V<5?' and the graph is tiny':''}, so A*'s estimate would add little. <b>Dijkstra</b> is optimal and the simplest correct choice.`}}
+let forceGoal='route';const goal=()=>forceAlg?forceGoal:'route',curAlg=()=>forceAlg||recommend(goal()).alg;
+function showRec(){const r=recommend(goal()),a=ALG[curAlg()];
+ $('#rec').innerHTML=`<h4><span class="star">★</span> Recommended: ${ALG[r.alg][0]}</h4><p>${r.why}</p><div class="chips">${r.facts.map(f=>`<span class="chip">${f}</span>`).join('')}</div>`+(forceAlg&&forceAlg!=r.alg?`<div class="msg err" style="margin-bottom:0">Showing <b>${ALG[forceAlg][0]}</b> because you opened it from the Learn page. For this graph the app would use <b>${ALG[r.alg][0]}</b>. <button id="usr" style="margin-top:6px">Use the recommendation</button></div>`:'');
+ const u=$('#usr');if(u)u.onclick=()=>{forceAlg=null;clr();showRec();draw()};
+ $('#why').innerHTML=`<b>Use when:</b> ${a[1]}<br><b>Limit:</b> ${a[2]} <b>Time:</b> ${a[3]}`}
+function tryAlg(k){forceAlg=k;forceGoal=EX[k][0]=='tree'?'tree':k=='dfs'?'visit':'route';clr();showRec();draw();goPage('sim')}
+$('#dir').onchange=()=>{forceAlg=null;clr();showRec();draw()};$('#src').onchange=$('#dst').onchange=()=>{const had=!!R;clr();draw();if(had)go()};
+$('#cbtn').onclick=()=>{const s=$('#src').value,d=$('#dst').value;if(!nd(s)||!nd(d)){$('#cmp').textContent='Select a valid source and destination.';return}
+ const rec0=recommend('route').alg;let h='<table><tr><th>Algorithm</th><th>Distance</th><th>Hops</th><th>Steps</th><th>Note</th></tr>';
+ ['dijkstra','astar','bellman','bfs','dfs'].forEach(a=>{const r=run(a,s,d,$('#dir').checked);h+=`<tr class="${a==rec0?'best':''}"><td>${ALG[a][0]}${a==rec0?' <span class="star">★ recommended</span>':''}</td>`+(r.err?`<td colspan="4" class="mu">${r.err.split('.')[0]}.</td>`:r.unreach?'<td colspan="4" class="mu">Unreachable</td>':`<td>${r.total}</td><td>${r.nodes.length-1}</td><td>${r.steps.length}</td><td class="mu">${a=='dijkstra'||a=='bellman'||a=='astar'?'Optimal':a=='bfs'?'Fewest hops':'Any path'}</td>`)+'</tr>'});$('#cmp').innerHTML=h+'</table>'};
+// ---- learn & quiz ----
+const CPT=[['Vertex','A point in the graph: a hub, a customer, a neuron or a metabolite.'],['Edge','A connection between two vertices: a road, a synapse or a reaction.'],['Weight','A number on an edge: distance, time, cost, delay or energy.'],['Directed or undirected','Directed edges work one way (one-way street, synapse). Undirected edges work both ways.'],['Tree','Connected, no cycles, exactly V−1 edges.'],['Spanning tree','A tree that touches every vertex. The minimum one has the lowest total weight.']];
+const EX={dijkstra:['path','Delivery routing; the fastest signal path through a neural circuit.','Why does Dijkstra fail with a negative edge? It finalizes a vertex when popped, assuming no later path can be shorter; a negative edge breaks that assumption.'],astar:['path','Navigation apps and games, using map distance as a hint.','What makes an A* heuristic admissible? It never overestimates the true remaining cost.'],bellman:['path','Metabolic pathways with energy-releasing (negative) steps; currency arbitrage.','How does Bellman-Ford detect a negative cycle? An edge can still be relaxed on the V-th pass.'],bfs:['visit','Fewest transfers; contact generations in an epidemic.','Why is BFS shortest only for unweighted graphs? It counts edges, not weight.'],dfs:['visit','Connectivity checks, cycle detection, exploring maze-like networks.','Which data structure does DFS use? A stack, or recursion.'],prim:['tree','Cheapest road or cable network; minimal-wiring models of neurons.','When prefer Prim over Kruskal? On dense graphs, since it grows from one vertex.'],kruskal:['tree','Connecting sites at minimum infrastructure cost.','What does Kruskal use to avoid cycles? Union-find (disjoint sets).']};
+const TM={dijkstra:'O((V+E) log V)',astar:'O(E log V)',bellman:'O(V·E)',bfs:'O(V+E)',dfs:'O(V+E)',prim:'O(E log V)',kruskal:'O(E log E)'},NG={dijkstra:'No',astar:'No',bellman:'Yes',bfs:'Ignores weights',dfs:'Ignores weights',prim:'Yes',kruskal:'Yes'},LB={path:'Shortest path',visit:'Traversal',tree:'Spanning tree'};
+let lf='all';
+$('#cpt').innerHTML=CPT.map(([t,d])=>`<div class="card"><b>${t}</b><p class="mu" style="margin:4px 0 0">${d}</p></div>`).join('');
+$('#flt').innerHTML=[['all','All'],['path','Shortest path'],['visit','Traversal'],['tree','Spanning tree']].map(([f,t])=>`<button data-f="${f}">${t}</button>`).join('');
+function renderLearn(){$('#algs').innerHTML=Object.entries(ALG).filter(([k])=>lf=='all'||EX[k][0]==lf).map(([k,a])=>`<div class="card"><h3 style="margin-top:0">${a[0]}</h3><p>${a[1]}</p><p class="mu"><b>Limitation:</b> ${a[2]}<br><b>Complexity:</b> <code>${a[3]}</code></p><p><b>Real world:</b> ${EX[k][1]}</p><pre>${a[4]}</pre><details><summary>Interview question</summary><p class="mu">${EX[k][2]}</p></details><button style="margin-top:8px" onclick="tryAlg('${k}')">Try in simulator</button></div>`).join('');$$('#flt button').forEach(b=>b.classList.toggle('on',b.dataset.f==lf))}
+$('#flt').onclick=e=>{const b=e.target.closest('button');if(b){lf=b.dataset.f;renderLearn()}};
+function pick(){const g=$('#wg').value,w=$('#ww').value,c=$('#wc').value;$('#ww').disabled=$('#wc').disabled=g!='path';$('#wr').textContent=g=='all'?'Prim or Kruskal build a minimum spanning tree. Kruskal sorts edges (good for sparse graphs); Prim grows from one vertex (good for dense graphs).':g=='visit'?'BFS explores level by level (fewest hops). DFS goes deep first (good for cycles and connectivity).':w=='no'?'BFS: with no weights, the shortest path is the one with the fewest edges.':w=='neg'?'Bellman-Ford: it handles negative weights and detects negative cycles. Dijkstra and A* are invalid here.':c=='y'?'A* (or Dijkstra): non-negative weights allow Dijkstra, and known coordinates let A* settle fewer vertices.':'Dijkstra: non-negative weights and no coordinate hint.'}
+['#wg','#ww','#wc'].forEach(x=>$(x).onchange=pick);
+$('#cht').innerHTML='<table><tr><th>Algorithm</th><th>Solves</th><th>Negative weights</th><th>Time</th></tr>'+Object.entries(ALG).map(([k,a])=>`<tr><td>${a[0]}</td><td>${LB[EX[k][0]]}</td><td>${NG[k]}</td><td><code>${TM[k]}</code></td></tr>`).join('')+'</table>';
+renderLearn();pick();
+const Q=[
+['Which algorithm must NOT be used when an edge has a negative weight?',['Bellman-Ford','Dijkstra','Kruskal'],1,'Dijkstra finalizes a vertex when it is popped, which negative edges break. Use Bellman-Ford.','Shortest path','Easy','Think about which algorithm finalizes vertices early.'],
+['How many edges does a spanning tree of a connected graph with 7 vertices have?',['6','7','8'],0,'A tree on V vertices always has V−1 edges.','Trees','Easy','A tree has no cycles.'],
+['Which algorithm finds the route with the fewest road segments in an unweighted graph?',['DFS','BFS','Prim'],1,'BFS explores level by level, so the first arrival uses the fewest hops.','Traversal','Easy','Level by level.'],
+['Which data structure does BFS use?',['Stack','Queue','Priority queue'],1,'A FIFO queue gives the level-by-level order. DFS uses a stack.','Traversal','Easy','First in, first out.'],
+['Kruskal’s algorithm skips an edge when…',['it is the heaviest edge','it joins two vertices already in the same component','it touches the source'],1,'Adding it would close a cycle, detected with union-find.','Spanning tree','Medium','Think about cycles.'],
+['Which algorithm uses union-find (disjoint sets)?',['Prim','Kruskal','Dijkstra'],1,'Kruskal uses union-find to test quickly whether two vertices are already connected.','Spanning tree','Medium','It sorts edges first.'],
+['What is the time complexity of Dijkstra with a binary heap?',['O(V²)','O((V+E) log V)','O(V·E)'],1,'Each edge can cause one heap push, and each heap operation costs O(log V).','Complexity','Medium','Heap operations cost log V.'],
+['How does Bellman-Ford detect a negative cycle?',['A vertex is visited twice','An edge can still be relaxed after V−1 passes','The queue becomes empty'],1,'Without a negative cycle, V−1 passes are enough. A further improvement means a cycle keeps lowering distances.','Shortest path','Medium','Count the passes.'],
+['Visiting 10 customers once each and returning to the depot is…',['A shortest-path problem','A TSP/VRP problem (NP-hard)','Solved exactly by BFS'],1,'Multi-stop routing is a different, NP-hard problem from point-to-point shortest path.','Routing','Medium','Is it one start and one end?'],
+['A neural circuit is a directed graph with synaptic delays as weights. Which algorithm finds the fewest synapses from receptor to muscle?',['BFS','Kruskal','Bellman-Ford'],0,'Counting synapses means counting edges, which is exactly what BFS minimizes.','Biology','Medium','Ignore the delays.'],
+['A metabolic pathway has energy-releasing (negative) steps. Which algorithm finds the cheapest route?',['Dijkstra','BFS','Bellman-Ford'],2,'Negative weights rule out Dijkstra, and BFS ignores weights. Bellman-Ford handles both.','Biology','Hard','Look at the sign of the weights.'],
+['An A* heuristic is admissible when…',['it never overestimates the remaining cost','it equals the true remaining cost','it is always zero'],0,'Admissibility guarantees A* returns an optimal path. A heuristic of zero is valid but turns A* into Dijkstra.','Shortest path','Hard','Optimistic estimates only.'],
+['A connected undirected graph has all distinct edge weights. How many minimum spanning trees does it have?',['Exactly one','Two','V'],0,'With distinct weights, the cut property forces a single cheapest choice at every step, so the MST is unique.','Spanning tree','Hard','Ties cause multiple MSTs.']];
+const PT={Easy:10,Medium:15,Hard:20};let deck,qi,pts,st;
+const shuf=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+function qstart(){deck=shuf(Q).map(q=>{const ix=shuf(q[1].map((_,i)=>i));return{t:q[0],o:ix.map(i=>q[1][i]),c:ix.indexOf(q[2]),e:q[3],cat:q[4],lv:q[5],h:q[6],r:null,hu:false}});qi=0;pts=0;st=0;quiz()}
+function side(){$('#qs').innerHTML=`<b>Progress</b><div class="bar2" style="margin:8px 0"><i style="width:${Math.min(qi,deck.length)/deck.length*100}%"></i></div><div class="dots">${deck.map((d,i)=>`<span class="${d.r||(i==qi?'c':'')}">${i+1}</span>`).join('')}</div><div class="kpi"><div><small>Points</small><b>${pts}</b></div><div><small>Streak</small><b>${st}</b></div></div><p class="mu" style="font-size:13px">Easy 10, Medium 15, Hard 20 points. A hint halves the points. Streaks of 2 or more add a bonus.</p>`}
+function quiz(){if(!deck)return qstart();const q=$('#qz');
+ if(qi>=deck.length){const ok=deck.filter(d=>d.r=='g').length,mxp=deck.reduce((a,d)=>a+PT[d.lv],0),pc=ok/deck.length,rk=pc>=.9?'Graph Master':pc>=.7?'Route Strategist':pc>=.4?'Apprentice Navigator':'Just getting started',miss=deck.filter(d=>d.r=='b');let b=0;try{b=Math.max(+localStorage.getItem('sr_bestq')||0,pts);localStorage.setItem('sr_bestq',b)}catch(e){}
+  q.innerHTML=`<h3 style="font-size:22px;margin-top:0">${rk}</h3><div class="kpi"><div><small>Correct</small><b>${ok}/${deck.length}</b></div><div><small>Points</small><b>${pts}</b></div><div><small>Best points</small><b>${b}</b></div><div><small>Base maximum</small><b>${mxp}</b></div></div>`+(miss.length?'<b>Review your mistakes</b>'+miss.map(d=>`<div class="msg err"><b>${d.t}</b><br>Answer: ${d.o[d.c]}. ${d.e}</div>`).join(''):'<div class="msg ok">Perfect round: nothing to review.</div>')+`<div class="bar"><button class="pri" id="qnew">New round</button>${miss.length?'<button id="rmm">Retry missed</button>':''}</div>`;
+  $('#qnew').onclick=qstart;if(miss.length)$('#rmm').onclick=()=>{deck=miss.map(d=>({...d,r:null,hu:false}));qi=0;pts=0;st=0;quiz()};side();return}
+ const d=deck[qi];
+ q.innerHTML=`<div class="bar" style="justify-content:space-between"><span class="mu">Question ${qi+1} of ${deck.length}</span><span><span class="tag">${d.cat}</span> <span class="tag">${d.lv}</span></span></div><div class="bar2"><i style="width:${qi/deck.length*100}%"></i></div><h3 style="font-size:20px;margin:16px 0">${d.t}</h3>`+d.o.map((x,i)=>`<button class="opt" data-i="${i}">${String.fromCharCode(65+i)}. ${x}</button>`).join('')+'<div class="bar" style="margin-top:10px"><button id="hnt">Show hint (halves points)</button></div><div id="fb"></div>';
+ $('#hnt').onclick=()=>{d.hu=true;$('#hnt').disabled=true;$('#fb').innerHTML='<div class="msg ok">Hint: '+d.h+'</div>'};
+ $$('.opt').forEach(b=>b.onclick=()=>{const good=+b.dataset.i==d.c;$$('.opt').forEach(x=>x.disabled=true);$('#hnt').disabled=true;$$('.opt')[d.c].classList.add('good');d.r=good?'g':'b';
+  if(good){st++;pts+=Math.round(PT[d.lv]*(d.hu?.5:1)+(st>1?Math.min(st-1,5)*2:0))}else{st=0;b.classList.add('bad')}
+  $('#fb').innerHTML=`<div class="msg ${good?'ok':'err'}">${good?'Correct. ':'Not quite. '}${d.e}</div><button class="pri" id="nq">${qi==deck.length-1?'See results':'Next question'}</button>`;$('#nq').onclick=()=>{qi++;quiz()};side()});side()}
+const fw=(ns,ed,dir)=>{const I=Infinity,D={};ns.forEach(a=>{D[a.id]={};ns.forEach(b=>D[a.id][b.id]=a==b?0:I)});ed.forEach(e=>{if(e.w<D[e.a][e.b])D[e.a][e.b]=e.w;if(!dir&&e.w<D[e.b][e.a])D[e.b][e.a]=e.w});ns.forEach(k=>ns.forEach(i=>ns.forEach(j=>{const v=D[i.id][k.id]+D[k.id][j.id];if(v<D[i.id][j.id])D[i.id][j.id]=v})));return D};
+$('#tst').onclick=()=>{const keep=G,res={},rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1)),hit=(k,ok)=>{res[k]=res[k]||[0,0];res[k][1]++;if(ok)res[k][0]++};
+for(let t=0;t<300;t++){const n=rnd(3,8),ns=[...Array(n).keys()].map(i=>({id:'n'+i,x:0,y:0,t:'Hub'})),s='n0',d='n'+(n-1),mk=(lo,dag)=>{const ed=[];for(let i=0;i<n;i++)for(let j=i+1;j<n;j++)if(Math.random()<.45){ed.push({a:'n'+i,b:'n'+j,w:rnd(lo,9),x:0});if(!dag&&Math.random()<.2)ed.push({a:'n'+j,b:'n'+i,w:rnd(lo,9),x:0})}return ed},val=r=>r.err?'err':r.unreach?Infinity:r.total;
+ let ed=mk(1,0),dir=Math.random()<.5;G={nodes:ns,edges:ed};hit('Dijkstra vs Floyd–Warshall',val(run('dijkstra',s,d,dir))===fw(ns,ed,dir)[s][d]);
+ ed=mk(-3,1);G={nodes:ns,edges:ed};hit('Bellman-Ford with negative weights vs Floyd–Warshall',val(run('bellman',s,d,true))===fw(ns,ed,true)[s][d]);
+ ed=mk(1,0).map(e=>({...e,w:1}));G={nodes:ns,edges:ed};dir=Math.random()<.5;const r=run('bfs',s,d,dir),f=fw(ns,ed,dir)[s][d];hit('BFS hop count vs Floyd–Warshall',r.unreach?f===Infinity:r.nodes.length-1===f);
+ ed=mk(1,0);for(let i=1;i<n;i++)ed.push({a:'n'+i,b:'n'+rnd(0,i-1),w:rnd(1,9),x:0});G={nodes:ns,edges:ed};const p=run('prim',s,d,false),k=run('kruskal',s,d,false);hit('Prim and Kruskal give equal MST weight',p.conn&&k.conn&&p.total===k.total&&p.pathE.length==n-1);
+ ed=mk(1,0);if(ed.length){ed[0].w=-2;G={nodes:ns,edges:ed};hit('Dijkstra rejects negative edges',!!run('dijkstra',s,d,false).err)}}
+G=keep;$('#tout').innerHTML=Object.entries(res).map(([k,v])=>`<div class="msg ${v[0]==v[1]?'ok':'err'}">${k}: ${v[0]}/${v[1]} passed</div>`).join('')};
+// ---- scenarios ----
+const mkG=(ns,es)=>({nodes:ns.map(([id,x,y,t,name])=>({id,x,y,t,name})),edges:es.map(([a,b,w])=>({a,b,w,x:0}))});
+const hav=(a,b)=>{const r=Math.PI/180,dl=(b[0]-a[0])*r,dn=(b[1]-a[1])*r,k=Math.sin(dl/2)**2+Math.cos(a[0]*r)*Math.cos(b[0]*r)*Math.sin(dn/2)**2;return 12742*Math.asin(Math.sqrt(k))};
+const LM=[['CHG','Changi Airport',1.3644,103.9915,'Warehouse'],['TPN','Tampines',1.3496,103.9568,'Hub'],['MBS','Marina Bay',1.2834,103.8607,'Hub'],['ORC','Orchard',1.3040,103.8318,'Hub'],['AMK','Ang Mo Kio',1.3691,103.8454,'Hub'],['JUR','Jurong East',1.3329,103.7436,'Hub'],['NUS','Kent Ridge',1.2966,103.7764,'Customer'],['SEN','Sentosa',1.2494,103.8303,'Customer'],['WDL','Woodlands',1.4370,103.7865,'Customer']];
+const RL=[['CHG','TPN'],['TPN','MBS'],['TPN','AMK'],['MBS','ORC'],['MBS','SEN'],['ORC','AMK'],['ORC','NUS'],['NUS','JUR'],['NUS','SEN'],['JUR','WDL'],['WDL','AMK']];
+const SC={
+city:{d:'Streets of a fictional city: warehouse, hubs and customers. Weights are distance units.',dir:false,G:sample,kp:t=>[['Distance',t],['Time (min)',t*1.5],['Cost ($)',t*.8],['Fuel (L)',t*.09]]},
+real:{d:'Real coordinates (latitude/longitude) of nine Singapore locations. Road weights are great-circle distance × 1.3 road factor, in km. Node positions are projected from the real coordinates; this is a schematic map, not live map tiles.',dir:false,G:()=>{const P={};const ns=LM.map(([id,name,la,lo,t])=>{P[id]=[la,lo];return[id,Math.round(60+(lo-103.74)/.26*680),Math.round(370-(la-1.25)/.2*320),t,name]});return mkG(ns,RL.map(([a,b])=>[a,b,Math.round(hav(P[a],P[b])*13)/10]))},kp:t=>[['Road distance (km)',t],['Drive time (min)',t/35*60],['Fuel (L)',t*.08]]},
+neural:{d:'Neurons are vertices, synapses are directed edges, weights are signal delays in ms (illustrative). Dijkstra = fastest reflex pathway, BFS = fewest synapses, MST = minimal-wiring network (Cajal’s wiring economy).',dir:true,G:()=>mkG([['RC',80,210,'Warehouse','Receptor'],['S1',220,100,'Hub','Sensory 1'],['S2',220,320,'Hub','Sensory 2'],['I1',380,210,'Hub','Interneuron 1'],['I2',520,100,'Hub','Interneuron 2'],['I3',520,320,'Hub','Interneuron 3'],['MN',640,170,'Hub','Motor neuron'],['MU',735,300,'Customer','Muscle']],[['RC','S1',1],['RC','S2',2],['S1','I1',3],['S2','I1',2],['S1','I2',6],['S2','I3',5],['I1','I2',2],['I1','I3',4],['I2','MN',3],['I3','MN',2],['I1','MN',7],['MN','MU',1]]),kp:(t,h)=>[['Signal delay (ms)',t],['Synapses crossed',h]]},
+meta:{d:'Metabolites are vertices, enzyme reactions are directed edges, weights are illustrative energy changes. Negative weights (energy-releasing steps) mean Dijkstra is invalid here, so use Bellman-Ford.',dir:true,G:()=>mkG([['GLC',80,200,'Warehouse','Glucose'],['G6P',210,100,'Hub','Glucose-6-P'],['F6P',210,310,'Hub','Fructose-6-P'],['FBP',370,310,'Hub','F-1,6-BP'],['G3P',380,120,'Hub','G3P'],['PYR',540,210,'Hub','Pyruvate'],['LAC',700,110,'Customer','Lactate'],['ACA',700,310,'Customer','Acetyl-CoA']],[['GLC','G6P',4],['G6P','F6P',2],['F6P','FBP',5],['G6P','G3P',9],['FBP','G3P',3],['G3P','PYR',-6],['PYR','LAC',-3],['PYR','ACA',-2]]),kp:(t,h)=>[['Net energy change',t],['Reaction steps',h]]}};
+let scn;try{scn=localStorage.getItem('sr_scn')}catch(e){}if(G.live||!SC[scn]){scn=SC[scn]?scn:'city';G=SC[scn].G();save()}
+$('#scn').value=scn;$('#scd').textContent=SC[scn].d;setHint();kpi(null);
+$('#scn').onchange=()=>{scn=$('#scn').value;try{localStorage.setItem('sr_scn',scn)}catch(e){}G=SC[scn].G();$('#dir').checked=SC[scn].dir;$('#scd').textContent=SC[scn].d;change()};
+$('#swp').onclick=()=>{const had=!!R,s=$('#src').value;$('#src').value=$('#dst').value;$('#dst').value=s;clr();draw();if(had)go()};
+addEventListener('keydown',e=>{if(!$('#sim').classList.contains('on')||/INPUT|SELECT|TEXTAREA/.test(e.target.tagName))return;if(e.key=='ArrowRight')stepTo(cur+1);else if(e.key=='ArrowLeft')stepTo(cur-1);else if(e.key==' '){e.preventDefault();$('#pl').click()}});
+// ---- real-world mode: Bengaluru (OpenStreetMap data) ----
+let RM,rRt,rMk,rPoiL,rSel,rRoad,rS=null,rD=null,radj,rpos,rTok=0,rGo=0,rPT=null,rRoadTimer=null,rRoadToken=0,nPoi=0,sTok=0,sRes=[];const seen=new Set();
+const BB=[12.48,77.20,13.40,78.00],BLR=[12.6505,77.4455];
+const mh=(a,b)=>{const r=Math.PI/180,dl=(b[0]-a[0])*r,dn=(b[1]-a[1])*r,k=Math.sin(dl/2)**2+Math.cos(a[0]*r)*Math.cos(b[0]*r)*Math.sin(dn/2)**2;return 12742000*Math.asin(Math.sqrt(k))};
+const rmsg=(t,e)=>{$('#rmsg').textContent=t;$('#rmsg').style.color=e?'var(--rd)':'var(--mu)'};
+const RN={dijkstra:'Dijkstra',astar:'A*',bfs:'BFS'},fmt=m=>m>=1000?(m/1000).toFixed(2)+' km':Math.round(m)+' m';
+const rrec=h=>{$('#rrec').innerHTML=h};
+const RDEF='<p class="mu">Tap the map (or a shop and choose “Set as start”), then pick a destination. Dijkstra, A* and BFS are tested and the best one is kept.</p>';
+const esc=t=>String(t==null?'':t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const CATS={groc:['🛒','Groceries & daily needs','#34d399'],med:['💊','Medical shops & clinics','#f87171'],stay:['🛏️','PG, hostels & stays','#a78bfa'],food:['🍴','Food & cafes','#fbbf24'],shop:['🏬','Other shops','#5eead4'],svc:['🏫','Services & places','#60a5fa']};
+function catOf(t){const sh=t.shop,am=t.amenity,to=t.tourism,nm=t.name||'';
+ if(/^(pharmacy|clinic|hospital|doctors|dentist|veterinary)$/.test(am)||t.healthcare||sh=='chemist'||sh=='medical_supply')return'med';
+ if(/^(hostel|guest_house|hotel|apartment|motel)$/.test(to)||t.building=='dormitory'||am=='hostel'||(!sh&&!am&&/(^|[^a-z])pg([^a-z]|$)|paying guest|hostel/i.test(nm)))return'stay';
+ if(sh=='bakery'||sh=='pastry'||sh=='confectionery')return'food';
+ if(/^(supermarket|convenience|grocery|greengrocer|general|kiosk|butcher|dairy|farm|deli|variety_store|department_store|mall|wholesale)$/.test(sh)||am=='marketplace')return'groc';
+ if(/^(restaurant|cafe|fast_food|food_court|bar|pub|ice_cream)$/.test(am))return'food';
+ if(sh)return'shop';
+ if(am||t.leisure||t.natural||t.railway||t.highway==='bus_stop'||t.public_transport)return'svc';
+ return null}
+// Map tiles. tile.openstreetmap.org refuses pages opened from a file (no Referer), so Esri streets is the default, with OSM as backups.
+const TILES=[
+ {u:'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',o:{maxZoom:20,subdomains:'abcd',attribution:'© OpenStreetMap contributors © CARTO'}},
+ {u:'https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',o:{maxZoom:19,maxNativeZoom:18,attribution:'Tiles © Esri · Data © OpenStreetMap contributors'}},
+ {u:'https://tile.openstreetmap.org/{z}/{x}/{y}.png',o:{maxZoom:19,attribution:'© OpenStreetMap contributors'}},
+ {u:'https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',o:{maxZoom:19,subdomains:'abc',attribution:'© OpenStreetMap contributors, HOT'}},
+ {u:'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',o:{maxZoom:19,maxNativeZoom:18,attribution:'Tiles © Esri'}},
+ {u:'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',o:{maxZoom:17,subdomains:'abc',attribution:'© OpenStreetMap contributors, SRTM · © OpenTopoMap'}}];
+let tIdx=-1,tLay=null,tErr=0,tOk=0,tVisited=new Set();
+function useTiles(i,manual){
+ if(tLay)RM.removeLayer(tLay);
+ if(manual)tVisited=new Set();
+ tIdx=i;tVisited.add(i);tErr=0;tOk=0;
+ tLay=L.tileLayer(TILES[i].u,Object.assign({crossOrigin:true},TILES[i].o)).addTo(RM);tLay.bringToBack();
+ tLay.on('tileload',()=>{tOk++});
+ tLay.on('tileerror',()=>{
+  if(tOk||++tErr<5)return;
+  const preference=i===1?[2,3]:i===2?[3,1]:i===3?[1,2]:[1,2,3];
+  const fb=preference.find(k=>!tVisited.has(k));
+  if(fb!==undefined){rmsg('This map provider did not load. Switching to another key-free street layer.');useTiles(fb,false)}
+  else rmsg('Map tiles could not be reached. Check the internet connection; the route and search tools need live map data too.',1)
+ });
+}
+const pop=(t,sub,la,lo)=>`<b>${esc(t)}</b><div class="pp">${sub}</div><div class="pb"><button data-use="s" data-la="${la}" data-lo="${lo}" data-nm="${esc(t)}">Set as start</button><button data-use="d" data-la="${la}" data-lo="${lo}" data-nm="${esc(t)}">Set as destination</button></div>`;
+function rinit(){if(RM){setTimeout(()=>RM.invalidateSize(),60);return}
+ if(!window.L){rmsg('The map library could not load. Open this page with internet access.',1);return}
+ RM=L.map('rmap',{maxBounds:[[12.48,77.2],[13.4,78.0]],maxBoundsViscosity:.9,minZoom:10,zoomSnap:.5,zoomDelta:.5,wheelPxPerZoomLevel:100}).setView(BLR,14);$('#rsty').value='1';useTiles(1,true);
+ rRoad=L.layerGroup().addTo(RM);rPoiL=L.layerGroup().addTo(RM);rRt=L.layerGroup().addTo(RM);rSel=L.layerGroup().addTo(RM);rMk=L.layerGroup().addTo(RM);cpInit();$('#rroads').onchange=()=>{rRoadToken++;if($('#rroads').checked){loadStreetOverlay()}else rRoad.clearLayers()};
+ RM.on('click',e=>rpickAt(e.latlng.lat,e.latlng.lng));
+ RM.on('popupopen',e=>e.popup.getElement().querySelectorAll('[data-use]').forEach(b=>b.onclick=()=>{RM.closePopup();rpickAt(+b.dataset.la,+b.dataset.lo,b.dataset.nm,b.dataset.use)}));
+ const zc=()=>{const c=RM.getContainer(),z=RM.getZoom();c.classList.toggle('zl',z>=17);[13,14,15,16].forEach(k=>c.classList.toggle('z'+k,z>=k))};RM.on('zoomend',zc);zc();
+ RM.on('moveend',()=>{clearTimeout(rPT);clearTimeout(rRoadTimer);if(RM.getZoom()>=14&&$('#rroads').checked)rRoadTimer=setTimeout(loadStreetOverlay,700);if(RM.getZoom()<16){if(!rS&&!rD&&!sRes.length)rmsg('Zoom to 14+ for road geometry; zoom to 16+ to load shops, medical stores, bakeries and PGs.');return}rPT=setTimeout(loadPoi,600)});
+ setTimeout(()=>RM.invalidateSize(),60)}
+// ---- data (Overpass servers, with backups) ----
+const OVP=['https://overpass-api.de/api/interpreter','https://overpass.kumi.systems/api/interpreter','https://overpass.private.coffee/api/interpreter'];
+async function ovp(q,ms){let le;for(const u of OVP){try{const r=await fetch(u,{method:'POST',body:'data='+encodeURIComponent(q),signal:AbortSignal.timeout?AbortSignal.timeout(ms||60000):undefined});if(!r.ok)throw new Error('HTTP '+r.status);return await r.json()}catch(e){le=e}}throw le}
+async function loadStreetOverlay(){
+ if(!RM||!rRoad||!$('#rroads').checked||RM.getZoom()<14)return;
+ const token=++rRoadToken,b=RM.getBounds(),A=`(${[b.getSouth(),b.getWest(),b.getNorth(),b.getEast()].map(x=>x.toFixed(5)).join(',')})`;
+ const q=`[out:json][timeout:35];way[highway~"^(motorway|trunk|primary|secondary|tertiary|unclassified|residential|living_street|road|service)$"]${A};out geom;`;
+ try{
+  const j=await ovp(q,40000);if(token!==rRoadToken||!$('#rroads').checked)return;
+  rRoad.clearLayers();let count=0;
+  for(const w of (j.elements||[])){
+   if(!w.geometry||w.geometry.length<2)continue;
+   const pts=w.geometry.map(p=>[p.lat,p.lon]);if(pts.some(p=>!Number.isFinite(p[0])||!Number.isFinite(p[1])))continue;
+   const hw=(w.tags||{}).highway||'';const major=/^(motorway|trunk|primary|secondary)$/.test(hw);
+   const line=L.polyline(pts,{color:major?'#f4c66a':'#8bc8bd',weight:major?3.2:1.8,opacity:major?.82:.62,lineCap:'round',lineJoin:'round',interactive:false});
+   line.addTo(rRoad);count++;
+  }
+  if(count===0)rRoad.clearLayers();
+ }catch(e){if(token===rRoadToken&&rRoad)rRoad.clearLayers()}
+}
+// ---- shops, medical stores and PGs in the current view ----
+function addPoi(j){const els=j.elements.filter(e=>e.tags).sort((a,b)=>!!b.tags.name-!!a.tags.name);if(nPoi+els.length>3500){rPoiL.clearLayers();seen.clear();nPoi=0}let n=0;
+ for(const e of els){const k=e.type+e.id;if(seen.has(k))continue;const t=e.tags,la=e.lat!=null?e.lat:e.center&&e.center.lat,lo=e.lon!=null?e.lon:e.center&&e.center.lon;if(la==null||lo==null)continue;const c=catOf(t);if(!c)continue;seen.add(k);
+  const nm=t.name||t['name:en']||'',[em,cn,col]=CATS[c],kind=(t.shop||t.amenity||t.tourism||t.healthcare||t.building||t.leisure||t.natural||t.railway||t.highway||t.public_transport||'').replace(/_/g,' '),addr=[t['addr:housenumber'],t['addr:street'],t['addr:suburb']||t['addr:city']].filter(Boolean).join(', '),ph=t.phone||t['contact:phone'];
+  const m=L.marker([la,lo],{icon:L.divIcon({className:'poi',html:`<span style="--c:${col}">${em}</span>`,iconSize:[26,26],iconAnchor:[13,13]}),title:nm||cn}).bindPopup(pop(nm||kind||cn,esc(cn)+(kind?' · '+esc(kind):'')+(addr?'<br>'+esc(addr):'')+(ph?'<br>📞 '+esc(ph):'')+(t.opening_hours?'<br>🕒 '+esc(t.opening_hours):''),la,lo),{maxWidth:240}).addTo(rPoiL);
+  if(nm)m.bindTooltip(esc(nm),{permanent:true,direction:'right',offset:[12,0],className:'pn'});nPoi++;n++}
+ return n}
+async function loadPoi(){if(!RM||RM.getZoom()<16)return;const tok=++rTok,quiet=rS||rD||sRes.length,b=RM.getBounds(),A=`(${[b.getSouth(),b.getWest(),b.getNorth(),b.getEast()].map(x=>x.toFixed(5)).join(',')})`;
+ if(!quiet)rmsg('Loading shops, medical stores and PGs in this view…');
+ const q=`[out:json][timeout:45];(nwr${A}[shop];nwr${A}[amenity~"^(pharmacy|clinic|hospital|doctors|dentist|veterinary|restaurant|cafe|fast_food|food_court|bar|pub|ice_cream|marketplace|hostel|school|kindergarten|college|university|bank|atm|fuel|place_of_worship|bus_station|post_office|police|fire_station|library|cinema|coworking_space|community_centre|charging_station)$"];nwr${A}[healthcare];nwr${A}[tourism~"^(hostel|guest_house|hotel|apartment|motel)$"];nwr${A}[building=dormitory];nwr${A}[leisure~"^(park|garden|playground|sports_centre|stadium|pitch|nature_reserve)$"];nwr${A}[natural~"^(water|wood|scrub)$"];nwr${A}[railway~"^(station|halt)$"];nwr${A}[highway=bus_stop];nwr${A}[public_transport~"^(station|platform)$"];nwr${A}[name~"(^| )PG( |$)|paying guest|hostel",i];);out center tags 3000;`;
+ try{const j=await ovp(q,50000),n=addPoi(j);if(tok==rTok&&!rS&&!rD&&!sRes.length)rmsg(`${nPoi.toLocaleString()} places on the map. Names show when you zoom in close. Tap a marker for details, or tap the map to set a start.`)}
+ catch(e){if(tok==rTok&&!quiet)rmsg('Could not load places here ('+e.message+'). Move the map a little to retry.',1)}}
+// ---- search any name in Bengaluru ----
+const inB=(la,lo)=>la>=BB[0]&&la<=BB[2]&&lo>=BB[1]&&lo<=BB[3];
+async function geoN(q){const r=await fetch('https://nominatim.openstreetmap.org/search?format=jsonv2&limit=8&bounded=1&viewbox=77.35,13.25,77.85,12.55&q='+encodeURIComponent(q));if(!r.ok)throw new Error('HTTP '+r.status);
+ return(await r.json()).map(x=>({nm:x.name||x.display_name.split(',')[0],sub:x.display_name.split(',').slice(1,4).join(',').trim(),la:+x.lat,lo:+x.lon,em:'📍',z:/^(place|boundary|highway|landuse)$/.test(x.category||'')?16:18}))}
+async function geoP(q){const r=await fetch('https://photon.komoot.io/api/?limit=8&lat=12.6585&lon=77.4560&bbox=77.35,12.55,77.85,13.25&q='+encodeURIComponent(q));if(!r.ok)throw new Error('HTTP '+r.status);
+ return((await r.json()).features||[]).map(f=>{const p=f.properties||{};return{nm:p.name||p.street||'',sub:[p.street,p.district||p.suburb,p.city].filter(Boolean).join(', '),la:f.geometry.coordinates[1],lo:f.geometry.coordinates[0],em:'📍',z:/^(place|boundary|highway)$/.test(p.osm_key||'')?16:18}}).filter(x=>x.nm&&inB(x.la,x.lo))}
+async function geoO(q){const tk=[...new Set((q.match(/[\p{L}\p{N}]{2,}/gu)||[]).slice(0,4))];if(!tk.length)return[];const F=tk.map(t=>`["name"~"${t}",i]`).join(''),bb=`(${BB.join(',')})`;
+ const j=await ovp('[out:json][timeout:40];('+['shop','amenity','healthcare','tourism','office','building','leisure','natural','railway','highway','public_transport','place'].map(k=>`nwr${F}[${k}]${bb};`).join('')+');out center tags 40;',45000);
+ return j.elements.map(e=>{const t=e.tags||{},la=e.lat!=null?e.lat:e.center&&e.center.lat,lo=e.lon!=null?e.lon:e.center&&e.center.lon,c=catOf(t),kind=(t.shop||t.amenity||t.tourism||t.healthcare||t.office||t.leisure||t.natural||t.railway||t.highway||t.public_transport||t.place||'').replace(/_/g,' ');
+  return{nm:t.name||'',sub:[kind,[t['addr:housenumber'],t['addr:street'],t['addr:suburb']||t['addr:city']].filter(Boolean).join(', ')].filter(Boolean).join(' · '),la,lo,em:c?CATS[c][0]:'📍',z:t.place?16:18}}).filter(x=>x.nm&&x.la!=null)}
+function addRes(list,tok,q){if(tok!=sTok)return;const ql=q.toLowerCase();list.forEach(x=>{if(!x.nm||x.la==null||x.lo==null)return;if(sRes.some(y=>y.nm.toLowerCase()==x.nm.toLowerCase()&&mh([y.la,y.lo],[x.la,x.lo])<80))return;sRes.push(x)});
+ const c=RM.getCenter(),sc=x=>(x.nm.toLowerCase().includes(ql)?0:1e7)+mh([x.la,x.lo],[c.lat,c.lng]);sRes.sort((a,b)=>sc(a)-sc(b));showRes()}
+function showRes(){$('#rres').innerHTML=sRes.slice(0,12).map((x,i)=>`<button class="rr" data-i="${i}"><b>${x.em} ${esc(x.nm)}</b><small>${esc(x.sub||'Bengaluru')}</small></button>`).join('')}
+function pickResult(i){const x=sRes[i];if(!x)return;$('#rres').innerHTML='';rSel.clearLayers();RM.flyTo([x.la,x.lo],x.z||18,{duration:.8});
+ const m=L.marker([x.la,x.lo],{icon:L.divIcon({className:'sel',html:'<span>📍</span>',iconSize:[30,30],iconAnchor:[15,30]})}).bindPopup(pop(x.nm,esc(x.sub||'Bengaluru'),x.la,x.lo),{maxWidth:240}).addTo(rSel);setTimeout(()=>m.openPopup(),950);
+ rmsg(`Showing ${x.nm}. Tap the pin to set it as your start or destination.`)}
+$('#rres').onclick=e=>{const b=e.target.closest('.rr');if(b)pickResult(+b.dataset.i)};
+$('#rsb').onclick=()=>{rinit();if(!RM)return;const q=$('#rq').value.trim();if(!q)return rmsg('Type a name first, for example a medical store, a PG or an area.',1);
+ const tok=++sTok;sRes=[];$('#rres').innerHTML='';rSel.clearLayers();addRes(lsearch(q),tok,q);rmsg('Searching Bengaluru for “'+q+'”…');let left=3,ok=0;
+ const fin=()=>{if(--left||tok!=sTok)return;if(sRes.length)rmsg(`${sRes.length} match${sRes.length>1?'es':''} found. Tap one to jump to it.`);else rmsg(ok?`Nothing named “${q}” was found in Bengaluru. Try fewer words, another spelling, or the area name. Shops that nobody has added to OpenStreetMap cannot be found.`:'Search failed. Check your internet connection and try again.',1)};
+ [geoN,geoP,geoO].forEach(f=>f(q).then(l=>{ok++;addRes(l,tok,q)}).catch(()=>{}).finally(fin))};
+$('#rq').onkeydown=e=>{if(e.key=='Enter')$('#rsb').click()};
+// ---- curated Bengaluru places (positions approximate) ----
+const CC={m:['🚇','Namma Metro · Green Line','#22c55e'],b:['🛍️','Malls, shops & stores','#f59e0b'],h:['🏥','Hospitals & clinics','#f87171'],f:['🍽️','Restaurants & cafes','#fbbf24'],t:['🛕','Temples & worship','#fb923c'],p:['🌳','Parks, lakes & grounds','#4ade80'],e:['🎓','Schools & colleges','#60a5fa'],g:['🛏️','PG & stays','#a78bfa'],x:['🚌','Bus, rail, civic & theatres','#c084fc'],a:['📍','Area','#94a3b8']};
+const CD=`m
+Silk Institute|12.8618849232|77.5299227020
+Thalaghattapura|12.8716784757|77.5387583624
+Vajarahalli|12.8774546615|77.5445944225
+Doddakallasandra|12.8847142200|77.5528456000
+Konanakunte Cross|12.8889700000|77.5626700000
+Yelachenahalli|12.8959000000|77.5702000000
+Jaya Prakash Nagar|12.9072990000|77.5731330000
+Banashankari|12.9156142739|77.5735067911
+RV Road|12.9214580000|77.5803750000
+Jayanagar|12.9295000000|77.5803000000
+South End Circle|12.9384457526|77.5799882658
+Lalbagh|12.9462547330|77.5797841248
+National College|12.9506316345|77.5736088600
+KR Market|12.9609000000|77.5747000000
+Chickpete|12.9674919324|77.5746295660
+Majestic|12.9756639797|77.5726620000
+Mantri Square Sampige Road|12.9905080000|77.5707290000
+Srirampura|12.9965080000|77.5632830000
+Mahakavi Kuvempu Road|12.9985000000|77.5569000000
+Rajajinagar|13.0003340000|77.5497010000
+Mahalakshmi|13.0082170000|77.5488210000
+Sandal Soap Factory|13.0147070000|77.5539620000
+Yeshwanthpur|13.0231810000|77.5499420000
+Goraguntepalya|13.0283700000|77.5407530000
+Peenya|13.0329210000|77.5332970000
+Peenya Industry|13.0363410000|77.5254650000
+Jalahalli|13.0394910000|77.5197030000
+Dasarahalli|13.0435670000|77.5124640000
+Nagasandra|13.0480410000|77.5000910000
+Manjunath Nagar|13.0501368000|77.4944134000
+Chikkabidarakallu|13.0524077000|77.4879204000
+Madavara|13.0574294000|77.4729466000
+b
+DMart – Kanakapura Main Road, Vajarahalli|12.8790|77.5490
+Prestige Forum Falcon City Mall – Konanakunte|12.8878|77.5610
+Mantri Arena Mall – Kanakapura Road|12.8815|77.5535
+Jayanagar Shopping Complex – 4th Block|12.9257|77.5832
+Jayanagar Market – 4th Block|12.9270|77.5846
+BDA Shopping Complex – Banashankari|12.9180|77.5715
+h
+Manipal Hospital – Yelachenahalli, Kanakapura Main Road|12.8947|77.5688
+Cura Hospitals – Doddakallasandra|12.8840|77.5560
+Zymus Hospital – Raghuvanahalli|12.8905|77.5655
+Sri Sai Ram Hospital – Yelachenahalli|12.8985|77.5715
+Vasan Eye Care – Jayanagar|12.9300|77.5835
+Apollo Clinic – Jayanagar|12.9285|77.5850
+Sagar Hospitals – Jayanagar|12.9235|77.5920
+BGS Gleneagles Hospital – Uttarahalli|12.9033|77.5480
+Victoria Hospital – Fort Road|12.9631|77.5752
+Vanivilas Hospital – Fort Road|12.9620|77.5740
+f
+Krishnam Udupi Hotel – Konanakunte|12.8890|77.5610
+Adyar Ananda Bhavan (A2B) – Konanakunte|12.8892|77.5614
+Empire Restaurant – Doddakallasandra|12.8825|77.5540
+Nandhana Palace – Yelachenahalli|12.8957|77.5700
+Paakashala – Yelachenahalli|12.8937|77.5680
+Kake Di Hatti – Raghuvanahalli|12.8920|77.5650
+Udupi Garden – Kanakapura Main Road|12.8860|77.5590
+MTR – Lalbagh Road|12.9551|77.5857
+Vidyarthi Bhavan – Gandhi Bazaar|12.9448|77.5715
+Brahmin's Coffee Bar – Shankarapuram|12.9456|77.5738
+CTR (Shri Sagar) – Malleshwaram|12.9992|77.5702
+Hotel Dwaraka – Gandhi Bazaar|12.9441|77.5722
+t
+Sri Indrakshi Durga Sannidhi – Gubbalala Gate|12.8760|77.5615
+Sri Raghavendra Matha – Agara|12.8715|77.5620
+Banashankari Amma Temple|12.9140|77.5738
+ISKCON Temple – Kanakapura Road|12.8736|77.5428
+Dodda Ganapathi Temple – Basavanagudi|12.9428|77.5689
+Bull Temple – Basavanagudi|12.9419|77.5681
+Gavi Gangadhareshwara Temple – Gavipuram|12.9483|77.5638
+Sri Ramakrishna Ashrama – Basavanagudi|12.9436|77.5719
+Sri Venkateshwara Temple – Gandhi Bazaar|12.9453|77.5726
+Sri Dattatreya Temple – Girinagar|12.9340|77.5440
+St. Francis of Assisi Church – Kanakapura Road|12.9010|77.5720
+Salvation Army Church – Kanakapura Road|12.8995|77.5690
+Masjid-e-Ansaar – Kanakapura Road|12.8900|77.5640
+p
+Konanakunte Lake|12.8845|77.5665
+Anjanapura Lake|12.8625|77.5600
+BDA Park – Kanakapura Road|12.9035|77.5690
+Banashankari Park|12.9205|77.5710
+Jayanagar 4th Block Park|12.9265|77.5818
+M.N. Krishna Rao Park – Basavanagudi|12.9392|77.5738
+Bugle Rock Park – Basavanagudi|12.9442|77.5668
+Lalbagh Botanical Garden|12.9507|77.5848
+Freedom Park – Gandhi Nagar|12.9776|77.5800
+Cubbon Park – Central Bengaluru|12.9763|77.5929
+Kanteerava Stadium – Kasturba Road|12.9696|77.5958
+National College Grounds – Basavanagudi|12.9441|77.5740
+Jayanagar Grounds|12.9310|77.5865
+Banashankari Grounds|12.9140|77.5690
+e
+Arihant PU College – Thalaghattapura|12.8700|77.5385
+Jyothy Kendriya Vidyalaya – Kanakapura Road|12.8680|77.5415
+Delhi Public School – Kanakapura Road|12.8750|77.5415
+Jnana Sweekar Public School – Kanakapura Road|12.8715|77.5410
+Asian International Public School – Kanakapura Road|12.8700|77.5350
+Carmel Public School – Kanakapura Road|12.8790|77.5510
+Silicon City College – Kanakapura Road|12.8620|77.5330
+KSIT – Kanakapura Road|12.8745|77.5585
+KSIT Polytechnic College – Kanakapura Road|12.8740|77.5595
+Yellamma Dasappa Institute of Technology|12.8775|77.5460
+Sri Chaitanya PU College – Gubbalala|12.8775|77.5595
+National College – Basavanagudi|12.9437|77.5746
+BMS College of Engineering – Basavanagudi|12.9413|77.5655
+Vijaya College – Jayanagar|12.9350|77.5750
+NMKRV College – Jayanagar|12.9300|77.5775
+Jain University – Jayanagar|12.9283|77.5798
+PES University – Banashankari|12.9346|77.5360
+Dayananda Sagar College of Engineering|12.9082|77.5671
+x
+Silk Institute Bus Stop|12.8628|77.5300
+Thalaghattapura Bus Stop|12.8694|77.5380
+Vajarahalli Bus Stop|12.8762|77.5461
+Doddakallasandra Bus Stop|12.8836|77.5551
+Konanakunte Cross Bus Stop|12.8903|77.5633
+Yelachenahalli Bus Stop|12.8964|77.5706
+Banashankari Bus Station (TTMC)|12.9160|77.5733
+Jayanagar Bus Station (TTMC)|12.9255|77.5810
+Kempegowda Bus Station (Majestic)|12.9775|77.5725
+KSR Bengaluru City Railway Station|12.9783|77.5690
+Bangalore Fort Railway Station|12.9622|77.5712
+KR Market Bus Station|12.9636|77.5762
+South End Circle|12.9378|77.5797
+Lalbagh West Gate|12.9502|77.5790
+Town Hall|12.9640|77.5855
+Vidhana Soudha|12.9795|77.5910
+High Court of Karnataka|12.9782|77.5922
+a
+Banavasi|12.8110|77.4990
+Udayapura|12.8210|77.5130
+Kaggalipura|12.7800|77.4880
+Talaghattapura|12.8725|77.5360
+Vajarahalli|12.8770|77.5470
+Doddakallasandra|12.8845|77.5570
+Konanakunte|12.8905|77.5625
+Gubbalala|12.8785|77.5605
+Yelachenahalli|12.8970|77.5720
+Kumaraswamy Layout|12.9060|77.5620
+JP Nagar|12.9063|77.5857
+Banashankari|12.9220|77.5670
+Jayanagar|12.9299|77.5838
+Basavanagudi|12.9419|77.5733
+Gandhi Bazaar|12.9446|77.5718
+VV Puram|12.9505|77.5715
+Lalbagh|12.9520|77.5830
+KR Market|12.9618|77.5782
+Chickpete|12.9675|77.5765
+Gandhi Nagar|12.9770|77.5790
+Majestic|12.9770|77.5710`,CP=[];let cK='',rCur,cMs=[];
+CD.split('\n').forEach(l=>{l=l.trim();if(!l)return;if(l.indexOf('|')<0){cK=l;return}const[n,a,o]=l.split('|'),i=n.indexOf(' – ');CP.push({nm:i<0?n:n.slice(0,i),sub:i<0?'':n.slice(i+3),c:cK,la:+a,lo:+o,ap:cK!=='m'})});
+// Removed the former pseudo-random business-marker generator: those points were synthetic offsets, not verified shop locations.
+// Local additions: exact Plus Code / map coordinates where publicly listed; otherwise an explicitly labelled area pin.
+const LOCAL_CP=[
+ {nm:'JAIN Global Campus – Main Gate',sub:'JCVR+27P · Jakkasandra Post · NH 948 / Bengaluru–Kanakapura Main Road',c:'e',la:12.64267,lo:77.4402539,ap:1,note:'Approximate entrance reference from the published Plus Code. Use this pin for the road-side campus approach; confirm the gate signage on arrival.'},
+ {nm:'JAIN Global Campus – Grounds',sub:'Jakkasandra Post, Kanakapura Taluk, Ramanagara 562112',c:'e',la:12.63865,lo:77.44137,ap:1,note:'OpenStreetMap campus-footprint reference (campus interior), not a public-road entrance. The campus is a large green site; use the separate Main Gate pin for road access.'},
+ {nm:'Dayananda Sagar University (DSU) – Main Campus',sub:'MC6X+6RP · Devarakaggalahalli · Harohalli · Kanakapura Road 562112',c:'e',la:12.662254,lo:77.450439,ap:1,note:'GPS reference published in a DSU Jan–Jun 2026 campus newsletter. This is a campus/building reference, not necessarily the vehicle gate; use road access and campus signage.'},
+ {nm:'Jakkasandra Village Centre',sub:'Jakkasandra village · Harohalli taluk · PIN 562112',c:'a',la:12.64931,lo:77.43940,ap:1,note:'Village-centre reference, not a shopfront location.'},
+ {nm:'Jenekal Bakery',sub:'No. 617 · Near Jain College · Jakkasandra, Kanakapura Road 560062',c:'f',la:12.64305,lo:77.43955,ap:1,note:'Approximate road-frontage pin based on the published No. 617 / near Jain College address; exact shopfront coordinates are not provided by the directory.'},
+ {nm:'Aditya Bakery – Jakkasandra',sub:'Jakkasandra, Kanakapura area · PIN 562112',c:'f',la:12.64931,lo:77.43940,ap:1,note:'Area-level listing only; the public listing does not provide a street number or exact map point.'},
+ {nm:'Shree BN Medical & General Stores',sub:'Shop No. 3, B.K. Main Road · Jakkasandra 562112 · Phone 99024 58396',c:'h',la:12.6441,lo:77.4408,ap:1,note:'Approximate road pin from the published B.K. Main Road address; the listing does not expose a verified storefront coordinate.'},
+ {nm:'Lakshmi Stores – Jakkasandra',sub:'Jakkasandra, Kanakapura 562112',c:'b',la:12.64931,lo:77.43940,ap:1,note:'Area-level listing only; exact storefront position is not published.'},
+ {nm:'Sri Venkata Manikanta PG Boys',sub:'JCXQ+MM9 · Banavasi / Jakkasandra 562112 · Phone 96060 39003',c:'g',la:12.6491625000,lo:77.4392343750,note:'Published Plus Code location.'},
+ {nm:'Mojo Campus Himalaya – Boys Hostel',sub:'Inside / beside JAIN Global Campus · Kanakapura Main Road · Jakkasandra 562112',c:'g',la:12.6419,lo:77.4411,ap:1,note:'Approximate campus-area pin based on the listed campus address; exact hostel entrance is not independently verified.'},
+ {nm:'Harohalli Industrial Area Phase 4',sub:'KIADB industrial area · Harohalli, Kanakapura',c:'a',la:12.63018,lo:77.42423,ap:1,note:'Industrial-area reference point, not an individual factory entrance.'},
+ {nm:'Mayura Bakery & Juice / Sweets',sub:'MFJ9+G44 · Main Road · Harohalli 562112',c:'f',la:12.6812625000,lo:77.4678281250,note:'Published Plus Code location. Listings use both “Mayura Bakery & Juice” and “Mayura Bakery & Sweets”.'},
+ {nm:'Sri Lakshmi Venkateshwara Bakery and Sweets',sub:'MFH9+WPJ · Bengaluru–Kanakapura Road · Opposite Harohalli Lake · 562112',c:'f',la:12.6798375000,lo:77.4692656250,note:'Published Plus Code location.'},
+ {nm:'Kaveri Bakery and Sweets S Savitha',sub:'No. 76 · Near Bus Stop · Kumbar Shed Road, 6th Cross · Harohalli 562112',c:'f',la:12.6838547,lo:77.4726027,note:'Map destination coordinates from the listing’s directions link; phone listed publicly: 99160 46066.'},
+ {nm:'Idly Mane',sub:'MFMF+F6C · Kanakapura Main Road · Harohalli 562112',c:'f',la:12.6836875000,lo:77.4730156250,note:'Published Plus Code location.'},
+ {nm:'Juice Cafe',sub:'MFHC+RG7 · Harohalli Road · Harohalli 562112',c:'f',la:12.6795375000,lo:77.4712968750,note:'Published Plus Code location.'},
+ {nm:'Ramanna Dum Biryani Corner',sub:'MFJ9+H7W · Harohalli 562112',c:'f',la:12.6814875000,lo:77.4682031250,note:'Published Plus Code location.'},
+ {nm:'Nisarga Family Restaurant',sub:'MFP8+753 · Harohalli 562112',c:'f',la:12.6856375000,lo:77.4654218750,note:'Published Plus Code location.'},
+ {nm:'Cafe World',sub:'MFPF+PVJ · Kanakapura Main Road · Harohalli 562112',c:'f',la:12.6868375000,lo:77.4746406250,note:'Published Plus Code location.'},
+ {nm:'Rayal Bakery',sub:'MFHC+MMX · Harohalli 562112',c:'f',la:12.6792375000,lo:77.4717343750,note:'Published Plus Code location.'},
+ {nm:'Modern Medical',sub:'MFHC+R83 · Harohalli 562112',c:'h',la:12.6795125000,lo:77.4707968750,note:'Published Plus Code location.'},
+ {nm:'Bharath Medical & General Stores',sub:'MFJC+V43 · Harohalli 562112',c:'h',la:12.6821375000,lo:77.4702968750,note:'Published Plus Code location.'},
+ {nm:'Sri Maruthi Medical & General Store – Harohalli',sub:'MFHC+Q98 · Anekal Main Road · Harohalli 562112',c:'h',la:12.6794125000,lo:77.4709531250,note:'Published Plus Code location.'},
+ {nm:'Krupa Medical and General Store',sub:'29, 8th Cross Road, 6th Main · Harohalli 562112',c:'h',la:12.6827016,lo:77.4669601,note:'Map coordinates from the listing’s Google Maps directions link.'},
+ {nm:'MS Family Mart',sub:'MFMC+2R9 · Opposite Krishna Swamy Temple · Kumbarshed, Harohalli 562112 · Phone 98801 11161',c:'b',la:12.6825375000,lo:77.4721093750,note:'Published Plus Code location.'},
+ {nm:'Sri Balaji PG',sub:'MC2Q+9MX · Kanakapura Main Road · Jakkasandra 562112',c:'g',la:12.6509875000,lo:77.4392343750,note:'Published short Plus Code recovered around Jakkasandra; verify the building frontage.'},
+ {nm:'MS Luxury Girls PG',sub:'44, Kanakapura Main Road · Near Jain University and DSU · Jakkasandra 562112',c:'g',la:12.6424,lo:77.4406,ap:1,note:'Approximate road-frontage pin based on the supplied address; exact building entrance is not independently verified.'},
+ {nm:'Sri Sai Balaji PG for Gents',sub:'1st Cross, Ambedkar Street · Jakkasandra 562112',c:'g',la:12.64931,lo:77.43940,ap:1,note:'Approximate Jakkasandra-area pin; street-level building position is not independently verified.'},
+ {nm:'Fly Homes Girls PG – Achhuta Nilayam',sub:'ABM Layout · Next to Dayananda Sagar University · Devarakaggalahalli / Harohalli 562112',c:'g',la:12.660757,lo:77.446993,ap:1,note:'Approximate ABM Layout / DSU-neighbourhood reference; the exact PG building entrance is not independently geocoded.'},
+
+ {nm:'Total Fresh Hypermart',sub:'MFJ9+Q3F · Harohalli–Bidadi Road · Harohalli 562112',c:'b',la:12.6819375,lo:77.467671875,ap:1,note:'Approximate point decoded from the published short Plus Code; check the storefront sign before travelling.'},
+ {nm:'Nandini Milk Parlour',sub:'MFPF+3H8 · Harohalli 562112',c:'b',la:12.6851625,lo:77.473953125,ap:1,note:'Approximate point decoded from the published short Plus Code; dairy shop listing.'},
+ {nm:'Chikkere Lake',sub:'MFPC+8CV · Harohalli 562112',c:'p',la:12.6858625,lo:77.471046875,ap:1,note:'Approximate point decoded from the published short Plus Code; lake/landmark reference, not an access-gate pin.'},
+ {nm:'Jakkasandra – Koramangala 1st Block (Urban locality)',sub:'Teacher’s Colony / Venkatapura / Koramangala 1st Block · Bengaluru 560034 · Directory leads: New Sapna Stores, J24 Sathish Essentials, Veerabhadreshwara Stores, Hari Om Medical, Sri Maruthi Medical, Sri Balaji PG for Boys, JS Luxury PG, MSR PG for Gents, Zolo Woodside',c:'a',la:12.9215,lo:77.6355,ap:1,note:'Area-level reference for the separate urban Jakkasandra in Koramangala. These business names have published directory listings in this locality, but individual door coordinates are not verified in this project. This is NOT Jakkasandra village near JAIN Global Campus. Zoom to 16+ to load individual OpenStreetMap features; use search for the named place.'},
+ {nm:'Harohalli Town Centre – Provision & General Stores',sub:'S Y D Provision Store · Suryas Provision Store · Green Grocers · SVS MART · KRISHNAPPA · Raghavendra Provision Store · H S Nagaraj Provision Store · Dhanlakshmi Provision Store · Sachin Paan Shop · Sri Veerabhadreshwara Provision Store · Lakshmi Stores · Al Madina General Store · Directory-only bakery leads: Quality Bakery · Chaitanya Bakery & Store · Chamundeshwari Bakery · Sudha Bakery & Sweets · Sri Venkateshwara Bakery & Sweets',c:'b',la:12.68017,lo:77.473355,ap:1,note:'Area-level directory cluster for Harohalli town shops; these names do not all have verified individual storefront coordinates. The bakery names in the popup are directory-only leads and are not individually placed. Use separate Plus Code pins where available and zoom in to load additional OpenStreetMap shops.'}
+];
+LOCAL_CP.forEach(p=>CP.push(p));
+const cFull=p=>p.nm+(p.c=='m'?' Metro Station':'');
+function cpInit(){rCur=L.layerGroup().addTo(RM);cMs=CP.filter(p=>p.c=='m').map(p=>[p.la,p.lo]);
+ L.polyline(cMs,{color:'#04101f',weight:9,opacity:.8}).addTo(rCur);L.polyline(cMs,{color:'#22c55e',weight:5}).bindTooltip('Green Line = path graph: '+cMs.length+' stations (vertices), '+(cMs.length-1)+' track sections (edges), '+(cMs.reduce((t,q,i)=>i?t+mh(cMs[i-1],q):0,0)/1000).toFixed(1)+' km',{sticky:true}).addTo(rCur);
+ CP.forEach(p=>{const[em,cn,col]=CC[p.c];const mk=L.marker([p.la,p.lo],{icon:L.divIcon({className:'cpw',html:`<span class="cp c-${p.c}" style="--c:${col}"><i>${em}</i><em>${esc(p.nm)}</em></span>`,iconSize:[0,0]}),zIndexOffset:p.c=='m'?500:p.c=='a'?-500:0}).bindPopup(pop(cFull(p),esc(cn)+(p.sub?' · '+esc(p.sub):'')+'<br><small>'+(p.note|| (p.ap?'Approximate area pin; exact street position not verified':'Approximate position; verify locally'))+'<br>Graph role: vertex, snaps to the nearest road node</small>',p.la,p.lo),{maxWidth:240}).addTo(rCur);CPM.push({m:mk,p})});CPM.sort((a,b)=>PR[a.p.c]-PR[b.p.c]);
+ const st=document.createElement('style');st.textContent=Object.keys(CC).map(k=>`#rmap.h-${k} .c-${k}{display:none!important}`).join('');document.head.appendChild(st);
+ const fl=$('#rflt');fl.innerHTML='<button id="gate" class="pri">🚪 Fit JAIN Main Gate</button><button id="local">📍 Fit JAIN + Harohalli</button><button id="campus">🎓 Fit JAIN + DSU</button><button id="jakkasandra">🏘 Fit Jakkasandra Village</button><button id="urbanj">🏙 Fit Jakkasandra (Koramangala)</button><button id="harohalli">🏬 Fit Harohalli</button><button id="gl">🚇 Fit Green Line</button>'+Object.keys(CC).map(k=>`<button class="on" data-k="${k}">${CC[k][0]} ${CC[k][1]} (${CP.filter(p=>p.c==k).length})</button>`).join('');
+ fl.onclick=e=>{const b=e.target.closest('button');if(!b)return;if(b.id=='gl')return RM.fitBounds(cMs,{padding:[30,30]});if(b.id=='gate')return RM.setView([12.64267,77.4402539],17);if(b.id=='local')return RM.fitBounds([[12.6380,77.4395],[12.6869,77.4748]],{padding:[24,24]});if(b.id=='campus')return RM.fitBounds([[12.6378,77.4390],[12.6630,77.4510]],{padding:[28,28]});if(b.id=='jakkasandra')return RM.fitBounds([[12.6380,77.4380],[12.6535,77.4460]],{padding:[26,26]});if(b.id=='urbanj')return RM.fitBounds([[12.9155,77.6280],[12.9280,77.6430]],{padding:[26,26]});if(b.id=='harohalli')return RM.fitBounds([[12.6785,77.4650],[12.6880,77.4760]],{padding:[24,24]});const on=b.classList.toggle('on');RM.getContainer().classList.toggle('h-'+b.dataset.k,!on)};
+ RM.setView([12.64267,77.4402539],16);let dT;RM.on('zoomend moveend',()=>{clearTimeout(dT);dT=setTimeout(declut,50)});setTimeout(declut,200);$('#rsty').onchange=()=>useTiles(+$('#rsty').value,true)}
+const CPM=[],PR={m:0,h:1,x:1,b:2,f:2,t:2,e:2,p:2,g:2,a:3};
+function declut(){if(!RM)return;const z=RM.getZoom(),W=[],I=[],hit=(r,A)=>A.some(q=>r[0]<q[2]&&r[2]>q[0]&&r[1]<q[3]&&r[3]>q[1]);
+ CPM.forEach(({m,p})=>{const e=m.getElement();if(!e||!e.firstChild)return;const pt=RM.latLngToContainerPoint(m.getLatLng()),x=pt.x,y=pt.y;let ho=false,nl=false;
+  if(p.c!='a'&&(z>=13||p.c=='m')){const r=[x-13,y-13,x+13,y+13];if(p.c!='m'&&hit(r,I))ho=true;else I.push(r)}
+  if(!ho){const sh=p.c=='a'?z<16:(z>=15||(p.c=='m'&&z>=13));if(sh){const r=[x+26,y-8,x+30+p.nm.length*6.3,y+8];if(hit(r,W)||hit(r,I))nl=true;else W.push(r)}}
+  e.firstChild.classList.toggle('ho',ho);e.firstChild.classList.toggle('nl',nl)})}
+function lsearch(q){const t=q.toLowerCase().split(/\s+/).filter(Boolean);if(!t.length)return[];return CP.filter(p=>{const h=(cFull(p)+' '+p.sub+' '+(p.detail||'')+' '+CC[p.c][1]).toLowerCase();return t.every(x=>h.includes(x))}).slice(0,12).map(p=>({nm:cFull(p),sub:CC[p.c][1]+(p.sub?' · '+p.sub:''),la:p.la,lo:p.lo,em:CC[p.c][0],z:p.c=='a'?15:17}))}
+$('#rq').oninput=()=>{const q=$('#rq').value.trim();if(!RM||q.length<2)return;const tok=++sTok;sRes=[];addRes(lsearch(q),tok,q)};
+// ---- show one algorithm's route and explored vertices ----
+function showAlg(x,fit){const o=RES.res[x];if(!o||!o.ok)return;rRt.clearLayers();const col={dijkstra:'#fbbf24',astar:'#22d3ee',bfs:'#f472b6'}[x],st=Math.max(1,Math.ceil(o.done.size/900));let n=0;
+ o.done.forEach(id=>{if(n++%st==0)L.circleMarker(rpos.get(id),{radius:2.5,stroke:false,fillColor:col,fillOpacity:.5,interactive:false}).addTo(rRt)});
+ const ll=o.path.map(id=>rpos.get(id)),pl=L.polyline(ll,{color:'#04101f',weight:10,opacity:.8,lineJoin:'round'}).addTo(rRt);L.polyline(ll,{color:col,weight:5,lineJoin:'round',className:'flow'}).addTo(rRt);if(fit&&ll.length>1)RM.fitBounds(pl.getBounds(),{padding:[40,40]});
+ document.querySelectorAll('#rcmp tr[data-a]').forEach(t=>t.classList.toggle('sel',t.dataset.a==x));const R=RES;
+ $('#rgraph').innerHTML=`<b>Graph model of this trip (${RN[x]})</b><table><tr><td>Vertices |V|</td><td>${R.V}</td></tr><tr><td>Directed edges |E|</td><td>${R.E}</td></tr><tr><td>Graph type</td><td>${R.walk?'Two-way':'One-way aware'}, weighted (metres)</td></tr><tr><td>Average degree</td><td>${(R.E/R.V).toFixed(2)}</td></tr><tr><td>Path</td><td>${o.path.length-1} edges, ${fmt(o.len)}</td></tr><tr><td>Explored</td><td>${o.done.size} vertices (${Math.round(100*o.done.size/R.V)}% of graph)</td></tr><tr><td>Method</td><td>${x=='bfs'?'BFS, O(V+E), counts edges':x=='astar'?'A*, Dijkstra + straight-line heuristic':'Dijkstra, O((V+E) log V), priority queue'}</td></tr></table>`}
+$('#rcmp').onclick=e=>{const t=e.target.closest('tr[data-a]');if(t&&window.RES)showAlg(t.dataset.a)};
+// ---- start / destination ----
+function kp(r){if(!r)$('#rgraph').innerHTML='';const w=$('#rmd').value=='walk';$('#rkp').innerHTML=r?[['Distance',fmt(r.len)],[w?'Walk time (min)':'Drive time (min, est.)',Math.max(1,Math.round(r.len/(w?80:400)))],['Vertices explored',r.n],['Search time (ms)',r.ms.toFixed(1)]].map(x=>`<div><small>${x[0]}</small><b>${x[1]}</b></div>`).join(''):''}
+function ends(){rMk.clearLayers();[[rS,'#fbbf24','Start'],[rD,'#86efac','Destination']].forEach(([p,c,t])=>{if(p)L.circleMarker([p.la,p.lo],{radius:9,color:'#04101f',weight:3,fillColor:c,fillOpacity:1}).bindTooltip(t,{permanent:true,direction:'top',offset:[0,-8],className:'se'}).addTo(rMk)})}
+function rpickAt(la,lo,nm,force){const p={la,lo,nm:nm||''};rGo++;rRt.clearLayers();kp(null);$('#rcmp').innerHTML='';
+ if(!force&&rS&&rD)rD=null;const which=force||(!rS?'s':!rD?'d':'s');if(which=='s')rS=p;else rD=p;ends();
+ if(rS&&rD)rroute();else{rrec(RDEF);rmsg(which=='s'?'Start set'+(p.nm?': '+p.nm:'')+'. Now tap the destination.':'Destination set'+(p.nm?': '+p.nm:'')+'. Now tap the start.')}}
+$('#rrs').onclick=()=>{rS=rD=null;rGo++;if(rRt){rRt.clearLayers();rMk.clearLayers()}kp(null);$('#rcmp').innerHTML='';rrec(RDEF);rmsg('Cleared. Tap the map to set a new start.')};
+$('#rmd').onchange=()=>{if(rS&&rD)rroute()};
+function rsearch(alg,s,t){const t0=performance.now(),T=rpos.get(t),h=alg=='astar'?id=>mh(rpos.get(id),T):()=>0,pr=new Map(),done=new Set();let len=null;
+ if(alg=='bfs'){const q=[s],seen=new Set([s]);for(let i=0;i<q.length;i++){const u=q[i];done.add(u);if(u==t)break;for(const[v]of radj.get(u)||[])if(!seen.has(v)){seen.add(v);pr.set(v,u);q.push(v)}}}
+ else{const g=new Map([[s,0]]),H=new Heap();H.push([h(s),s]);while(H.a.length){const[,u]=H.pop();if(done.has(u))continue;done.add(u);if(u==t){len=g.get(u);break}for(const[v,w]of radj.get(u)||[]){const ng=g.get(u)+w;if(!done.has(v)&&ng<(g.get(v)??Infinity)){g.set(v,ng);pr.set(v,u);H.push([ng+h(v),v])}}}}
+ if(s!=t&&!pr.has(t))return{ok:false,n:done.size,ms:performance.now()-t0,done};
+ const path=[t];while(path[0]!=s)path.unshift(pr.get(path[0]));
+ if(len==null){len=0;for(let i=1;i<path.length;i++)len+=radj.get(path[i-1]).find(x=>x[0]==path[i])[1]}
+ return{ok:true,path,len,n:done.size,ms:performance.now()-t0,done}}
+async function rroute(){const my=++rGo,walk=$('#rmd').value=='walk',a=[rS.la,rS.lo],b=[rD.la,rD.lo],d0=mh(a,b),fail=(h,m)=>{kp(null);$('#rcmp').innerHTML='';rrec(h);rmsg(m,1)};
+ const far=d0>6000;if(far&&(walk||d0>22000))return fail(`<h4>Too far apart</h4><p>These points are ${fmt(d0)} apart. ${walk?'Walking routes are limited to 6 km':'Driving routes are limited to 22 km'} so the road network stays small enough to download quickly.</p>`,'Start and destination are too far apart. Choose a closer pair.');
+ const pad=.005+.15*Math.max(Math.abs(a[0]-b[0]),Math.abs(a[1]-b[1])),bb=[Math.min(a[0],b[0])-pad,Math.min(a[1],b[1])-pad,Math.max(a[0],b[0])+pad,Math.max(a[1],b[1])+pad].map(x=>x.toFixed(5)).join(','),
+ hw=walk?'primary|secondary|tertiary|unclassified|residential|living_street|pedestrian|footway|path|service|steps|cycleway|track|road|bridleway|corridor':far?'motorway|trunk|primary|secondary|tertiary|motorway_link|trunk_link|primary_link|secondary_link|tertiary_link':'motorway|trunk|primary|secondary|tertiary|unclassified|residential|living_street|service|track|road|motorway_link|trunk_link|primary_link|secondary_link|tertiary_link';
+ rrec('<p class="mu">Downloading the road network between the two points…</p>');rmsg('Downloading roads between the two points…');
+ let j;try{j=await ovp(`[out:json][timeout:60];way[highway~"^(${hw})$"](${bb});out geom;`,60000)}catch(er){if(my==rGo)fail('<p class="mu">Could not download roads.</p>','Could not reach any OpenStreetMap data server ('+er.message+'). Check your internet connection and try again in a moment.');return}
+ if(my!=rGo)return;
+ const P=new Map(),A=new Map();let E=0;const add=(x,y,w)=>{(A.get(x)||A.set(x,[]).get(x)).push([y,w]);E++};
+ j.elements.forEach(w=>{if(!w.geometry)return;const t=w.tags||{},ow=t.oneway,rev=ow=='-1'||ow=='reverse',one=!walk&&(rev||ow=='yes'||ow=='1'||ow=='true'||t.junction=='roundabout');
+  w.nodes.forEach((id,i)=>{P.set(id,[w.geometry[i].lat,w.geometry[i].lon]);if(i){const pa=w.nodes[i-1],d=mh(P.get(pa),P.get(id));if(!one||!rev)add(pa,id,d);if(!one||rev)add(id,pa,d)}})});
+ if(!P.size)return fail('<h4>No roads found</h4><p>OpenStreetMap has no roads between these two points.</p>','No roads found between these points. Try other points.');
+ radj=A;rpos=P;
+ const snap=p=>{let bn=null,bd=1e12;P.forEach((q,id)=>{const d=(q[0]-p[0])**2+(q[1]-p[1])**2;if(d<bd){bd=d;bn=id}});return bn},s=snap(a),t=snap(b);
+ if(s==t)return fail('<h4>Same spot</h4><p>Start and destination snap to the same intersection.</p>','Start and destination are on the same spot. Choose points further apart.');
+ const res={};['astar','dijkstra','bfs'].forEach(x=>res[x]=rsearch(x,s,t));rRt.clearLayers();
+ const okA=['astar','dijkstra','bfs'].filter(x=>res[x].ok);
+ if(!okA.length)return fail('<h4>No route</h4><p>No algorithm can reach the destination from the start. The area is disconnected or one-way streets block it.</p>','No route: the destination cannot be reached from the start (one-way streets or a disconnected area). Try other points.');
+ const opt=Math.min(...okA.map(x=>res[x].len)),best=okA.filter(x=>res[x].len<=opt+1e-6).sort((x,y)=>res[x].n-res[y].n)[0],r=res[best],d=res.dijkstra,bf=res.bfs;
+ window.RES={res,best,V:P.size,E,walk};showAlg(best,true);
+ const saved=d.ok&&d.n>0?Math.round((1-r.n/d.n)*100):0,longer=bf.ok&&bf.len>opt+1e-6?Math.round((bf.len/opt-1)*100):0;
+ const why=best=='astar'?`Coordinates are known and every length is non-negative, so the straight-line estimate is safe.${saved>0?` It explored ${saved}% fewer vertices than Dijkstra.`:''}`:best=='dijkstra'?'A* did not explore fewer vertices on this trip (it is short or very direct), so plain Dijkstra is the simplest optimal choice.':'Every route found is equally short and BFS explored the fewest vertices.';
+ rrec(`<h4><span class="star">★</span> Best for this trip: ${RN[best]}</h4><p>${why}${longer?` BFS minimises road segments, not length, so its route is ${longer}% longer.`:''}</p>`);
+ $('#rcmp').innerHTML='<table><tr><th>Algorithm</th><th>Distance</th><th>Explored</th><th>ms</th></tr>'+['dijkstra','astar','bfs'].map(x=>{const y=res[x];return`<tr data-a="${x}" style="cursor:pointer" class="${x==best?'best':''}"><td>${RN[x]}${x==best?' <span class="star">★</span>':''}</td>`+(y.ok?`<td>${Math.round(y.len)} m</td><td>${y.n}</td><td>${y.ms.toFixed(1)}</td>`:'<td colspan="3">No route</td>')+'</tr>'}).join('')+'</table>';
+ kp(r);rmsg(`${RN[best]} (chosen automatically): ${fmt(r.len)}. Explored ${r.n} of ${P.size} vertices.${far?' Long trips use main roads only.':''} Tap the map again to start a new route.`)}
+// 3D background: night-city road grid with moving vehicles
+(function(){try{if(!window.THREE)return;const T=THREE,rm=matchMedia('(prefers-reduced-motion:reduce)').matches,mob=innerWidth<700,cv=document.createElement('canvas');cv.id='bg';cv.setAttribute('aria-hidden','true');document.body.prepend(cv);
+const rd=new T.WebGLRenderer({canvas:cv,alpha:true,antialias:!mob});rd.setPixelRatio(Math.min(devicePixelRatio,2));
+const sc=new T.Scene(),cam=new T.PerspectiveCamera(50,1,.1,200),rnd=Math.random;sc.fog=new T.Fog(0x071a1a,16,48);
+sc.add(new T.AmbientLight(0x4f8f88,.9));const dl=new T.DirectionalLight(0xbafcf0,.9);dl.position.set(-8,14,6);sc.add(dl);
+const tex=(()=>{const c=document.createElement('canvas');c.width=c.height=64;const x=c.getContext('2d'),g=x.createRadialGradient(32,32,0,32,32,32);g.addColorStop(0,'rgba(255,255,255,1)');g.addColorStop(.3,'rgba(255,255,255,.8)');g.addColorStop(1,'rgba(255,255,255,0)');x.fillStyle=g;x.fillRect(0,0,64,64);return new T.CanvasTexture(c)})();
+const pm=(c,s,o,vc)=>new T.PointsMaterial({color:c,size:s,map:tex,transparent:true,opacity:o,depthWrite:false,blending:T.AdditiveBlending,vertexColors:!!vc});
+const N=mob?11:17,C=2.4,H=N*C/2;
+const bm=new T.InstancedMesh(new T.BoxGeometry(1,1,1),new T.MeshLambertMaterial({color:0xffffff}),N*N),M=new T.Matrix4(),col=new T.Color();let k=0;
+for(let i=0;i<N;i++)for(let j=0;j<N;j++){const x=(i+.5-N/2)*C,z=(j+.5-N/2)*C,d=Math.hypot(x,z)/H,h=.3+rnd()*3.2*Math.exp(-d*d*2.2)+rnd()*.4,w=C*(.55+rnd()*.25);M.compose(new T.Vector3(x,h/2,z),new T.Quaternion(),new T.Vector3(w,h,w));bm.setMatrixAt(k,M);col.setHSL(.47+rnd()*.05,.4,.1+h*.04);bm.setColorAt(k++,col)}
+sc.add(bm);
+const L=[],I=[];for(let i=0;i<=N;i++){const r=(i-N/2)*C;L.push(-H,.03,r,H,.03,r,r,.03,-H,r,.03,H);for(let j=0;j<=N;j++)I.push(r,.06,(j-N/2)*C)}
+const lg=new T.BufferGeometry();lg.setAttribute('position',new T.Float32BufferAttribute(L,3));sc.add(new T.LineSegments(lg,new T.LineBasicMaterial({color:0x2dd4bf,transparent:true,opacity:.35})));
+const ig=new T.BufferGeometry();ig.setAttribute('position',new T.Float32BufferAttribute(I,3));sc.add(new T.Points(ig,pm(0x5eead4,.4,.9)));
+const V=mob?26:60,TR=6,vs=[...Array(V)].map(()=>({ax:rnd()<.5?0:1,l:Math.floor(rnd()*(N+1)),p:rnd()*2*H-H,s:(.03+rnd()*.05)*(rnd()<.5?1:-1)})),vg=new T.BufferGeometry(),vc=[];
+vg.setAttribute('position',new T.Float32BufferAttribute(new Float32Array(V*TR*3),3));
+for(let i=0;i<V;i++)for(let k=0;k<TR;k++){const f=Math.pow(1-k/TR,1.5);vc.push(f,.78*f,.2*f)}
+vg.setAttribute('color',new T.Float32BufferAttribute(vc,3));sc.add(new T.Points(vg,pm(0xffffff,.5,1,1)));
+let mx=0,my=0,on=true,raf=0;addEventListener('pointermove',e=>{mx=e.clientX/innerWidth-.5;my=e.clientY/innerHeight-.5});
+const rs=()=>{rd.setSize(innerWidth,innerHeight,false);cam.aspect=innerWidth/innerHeight;cam.updateProjectionMatrix();rd.render(sc,cam)};rs();addEventListener('resize',rs);
+function loop(tm){const a=vg.attributes.position;vs.forEach((v,i)=>{v.p+=v.s;if(Math.abs(v.p)>H)v.p=-Math.sign(v.s)*H;const r=(v.l-N/2)*C;for(let k=0;k<TR;k++){const q=v.p-k*Math.sign(v.s)*.3;v.ax?a.setXYZ(i*TR+k,r,.12,q):a.setXYZ(i*TR+k,q,.12,r)}});a.needsUpdate=true;
+ const an=Math.sin(tm*.00005)*.6+mx*.3;cam.position.set(Math.sin(an)*22,11+my*2,Math.cos(an)*22);cam.lookAt(0,1,0);rd.render(sc,cam);raf=0;if(on)raf=requestAnimationFrame(loop)}
+if(rm)on=false;loop(0);if(!rm)document.addEventListener('visibilitychange',()=>{on=!document.hidden;if(on&&!raf)loop(performance.now())})}catch(e){}})();
+// ---- router ----
+function goPage(h){const pg=$$('.pg').some(x=>x.id==h)?h:'home';$$('.pg').forEach(x=>x.classList.toggle('on',x.id==pg));document.body.dataset.p=pg;$$('nav a').forEach(a=>a.classList.toggle('on',a.hash=='#'+pg));
+ try{if(location.hash!='#'+pg)history.replaceState(null,'','#'+pg)}catch(e){}
+ if(pg=='sim')draw();if(pg=='real')rinit();scrollTo(0,0)}
+function route(){goPage((location.hash||'#home').slice(1))}
+$('nav').addEventListener('click',e=>{const a=e.target.closest('a');if(a){e.preventDefault();goPage(a.hash.slice(1))}});
+addEventListener('hashchange',route);fill();showRec();quiz();route();
+</script></body></html>
