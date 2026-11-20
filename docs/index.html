@@ -883,7 +883,7 @@ function tryFallback(failedIndex){
 const pop=(t,sub,la,lo)=>`<b>${esc(t)}</b><div class="pp">${sub}</div><div class="pb"><button data-use="s" data-la="${la}" data-lo="${lo}" data-nm="${esc(t)}">Set as start</button><button data-use="d" data-la="${la}" data-lo="${lo}" data-nm="${esc(t)}">Set as destination</button></div>`;
 function rinit(){if(RM){setTimeout(()=>RM.invalidateSize(),60);return}
  if(!window.L){rmsg('The map library could not load. Open this page with internet access.',1);return}
- RM=L.map('rmap',{minZoom:2,zoomSnap:.5,zoomDelta:.5,wheelPxPerZoomLevel:100,preferCanvas:true}).setView([12.9716,77.5946],12);$('#rsty').value='1';useTiles(1,true);
+ RM=L.map('rmap',{minZoom:2,maxZoom:19,zoomSnap:.5,zoomDelta:.5,wheelPxPerZoomLevel:100,preferCanvas:true}).setView([22.8,82.3],5.1);$('#rsty').value='1';useTiles(1,true);
  $('#retryTiles').onclick=()=>useTiles(+$('#rsty').value||1,true);
  rRoad=L.layerGroup().addTo(RM);rPoiL=L.layerGroup().addTo(RM);rRt=L.layerGroup().addTo(RM);rSel=L.layerGroup().addTo(RM);rMk=L.layerGroup().addTo(RM);cpInit();const refreshRoadOverlay=()=>{rRoadToken++;if($('#rroads').checked){loadStreetOverlay()}else rRoad.clearLayers()};$('#rroads').onchange=refreshRoadOverlay;document.querySelectorAll('.road-filter').forEach(input=>input.onchange=refreshRoadOverlay);
  RM.on('click',e=>rpickAt(e.latlng.lat,e.latlng.lng));
@@ -1003,27 +1003,72 @@ $('#rq').onkeydown=e=>{if(e.key==='Enter')$('#rsb').click()};
 // Quick map views. These only position the map; place names and exact pins
 // still come from search or mapped OpenStreetMap features.
 const QUICK_CITIES={
- bengaluru:{name:'Bengaluru',center:[12.9716,77.5946],zoom:12},
- mysuru:{name:'Mysuru',center:[12.2958,76.6394],zoom:12},
- chennai:{name:'Chennai',center:[13.0827,80.2707],zoom:12},
- hyderabad:{name:'Hyderabad',center:[17.3850,78.4867],zoom:12},
- mumbai:{name:'Mumbai',center:[19.0760,72.8777],zoom:12},
- delhi:{name:'Delhi',center:[28.6139,77.2090],zoom:12},
- pune:{name:'Pune',center:[18.5204,73.8567],zoom:12},
- singapore:{name:'Singapore',center:[1.3521,103.8198],zoom:12},
- dubai:{name:'Dubai',center:[25.2048,55.2708],zoom:12},
- london:{name:'London',center:[51.5072,-0.1276],zoom:12},
- paris:{name:'Paris',center:[48.8566,2.3522],zoom:12},
- tokyo:{name:'Tokyo',center:[35.6762,139.6503],zoom:12},
- newyork:{name:'New York',center:[40.7128,-74.0060],zoom:12},
- sydney:{name:'Sydney',center:[-33.8688,151.2093],zoom:12}
+ bengaluru:{name:'Bengaluru',center:[12.9716,77.5946],zoom:12}, mysuru:{name:'Mysuru',center:[12.2958,76.6394],zoom:12},
+ chennai:{name:'Chennai',center:[13.0827,80.2707],zoom:12}, hyderabad:{name:'Hyderabad',center:[17.3850,78.4867],zoom:12},
+ mumbai:{name:'Mumbai',center:[19.0760,72.8777],zoom:12}, delhi:{name:'Delhi',center:[28.6139,77.2090],zoom:12},
+ pune:{name:'Pune',center:[18.5204,73.8567],zoom:12}, kolkata:{name:'Kolkata',center:[22.5726,88.3639],zoom:12},
+ ahmedabad:{name:'Ahmedabad',center:[23.0225,72.5714],zoom:12}, jaipur:{name:'Jaipur',center:[26.9124,75.7873],zoom:12},
+ lucknow:{name:'Lucknow',center:[26.8467,80.9462],zoom:12}, bhopal:{name:'Bhopal',center:[23.2599,77.4126],zoom:12},
+ kochi:{name:'Kochi',center:[9.9312,76.2673],zoom:12}, guwahati:{name:'Guwahati',center:[26.1445,91.7362],zoom:12},
+ srinagar:{name:'Srinagar',center:[34.0837,74.7973],zoom:12}, visakhapatnam:{name:'Visakhapatnam',center:[17.6868,83.2185],zoom:12},
+ bhubaneswar:{name:'Bhubaneswar',center:[20.2961,85.8245],zoom:12}, patna:{name:'Patna',center:[25.5941,85.1376],zoom:12},
+ coimbatore:{name:'Coimbatore',center:[11.0168,76.9558],zoom:12}, indore:{name:'Indore',center:[22.7196,75.8577],zoom:12}
 };
-$('#cityJumps').onclick=e=>{
- const button=e.target.closest('button[data-city]');if(!button)return;
- const city=QUICK_CITIES[button.dataset.city];if(!city||!RM)return;
- RM.flyTo(city.center,city.zoom,{duration:.9});
- $('#cityJumps').querySelectorAll('button').forEach(b=>b.classList.toggle('active',b===button));
- rmsg(`Map centred on ${city.name}. Search for a specific place or zoom in to load mapped points of interest.`);
+const INDIA_STATE_VIEWS={
+ 'andhra-pradesh':{name:'Andhra Pradesh',center:[16.5062,80.6480]}, 'arunachal-pradesh':{name:'Arunachal Pradesh',center:[27.0844,93.6053]},
+ assam:{name:'Assam',center:[26.1433,91.7898]}, bihar:{name:'Bihar',center:[25.5941,85.1376]},
+ chhattisgarh:{name:'Chhattisgarh',center:[21.2514,81.6296]}, goa:{name:'Goa',center:[15.4909,73.8278]},
+ gujarat:{name:'Gujarat',center:[23.2156,72.6369]}, haryana:{name:'Haryana',center:[30.7333,76.7794]},
+ 'himachal-pradesh':{name:'Himachal Pradesh',center:[31.1048,77.1734]}, jharkhand:{name:'Jharkhand',center:[23.3441,85.3096]},
+ karnataka:{name:'Karnataka',center:[12.9716,77.5946]}, kerala:{name:'Kerala',center:[8.5241,76.9366]},
+ 'madhya-pradesh':{name:'Madhya Pradesh',center:[23.2599,77.4126]}, maharashtra:{name:'Maharashtra',center:[19.0760,72.8777]},
+ manipur:{name:'Manipur',center:[24.8170,93.9368]}, meghalaya:{name:'Meghalaya',center:[25.5788,91.8933]},
+ mizoram:{name:'Mizoram',center:[23.7271,92.7176]}, nagaland:{name:'Nagaland',center:[25.6751,94.1086]},
+ odisha:{name:'Odisha',center:[20.2961,85.8245]}, punjab:{name:'Punjab',center:[30.7333,76.7794]},
+ rajasthan:{name:'Rajasthan',center:[26.9124,75.7873]}, sikkim:{name:'Sikkim',center:[27.3314,88.6138]},
+ 'tamil-nadu':{name:'Tamil Nadu',center:[13.0827,80.2707]}, telangana:{name:'Telangana',center:[17.3850,78.4867]},
+ tripura:{name:'Tripura',center:[23.8315,91.2868]}, 'uttar-pradesh':{name:'Uttar Pradesh',center:[26.8467,80.9462]},
+ uttarakhand:{name:'Uttarakhand',center:[30.3165,78.0322]}, 'west-bengal':{name:'West Bengal',center:[22.5726,88.3639]},
+ 'andaman-nicobar':{name:'Andaman and Nicobar Islands',center:[11.6234,92.7265]},
+ chandigarh:{name:'Chandigarh',center:[30.7333,76.7794]}, 'dadra-nagar-haveli-daman-diu':{name:'Dadra and Nagar Haveli and Daman and Diu',center:[20.3974,72.8328]},
+ 'delhi-utc':{name:'Delhi',center:[28.6139,77.2090]}, 'jammu-kashmir':{name:'Jammu and Kashmir',center:[34.0837,74.7973]},
+ ladakh:{name:'Ladakh',center:[34.1526,77.5771]}, lakshadweep:{name:'Lakshadweep',center:[10.5593,72.6358]},
+ puducherry:{name:'Puducherry',center:[11.9416,79.8083]}
+};
+function focusIndia(){
+ if(!RM)return;
+ RM.flyTo([22.8,82.3],5.1,{duration:0.9});
+ $('#indiaState').value='';
+ $('#cityJumps').querySelectorAll('button').forEach(function(button){button.classList.remove('active')});
+ rmsg('India overview. Search a place, choose a state or jump to a major city to explore its mapped road network.');
+}
+$('#indiaOverview').onclick=focusIndia;
+$('#indiaState').onchange=function(){
+ const item=INDIA_STATE_VIEWS[$('#indiaState').value];
+ if(!item||!RM)return;
+ RM.flyTo(item.center,7.4,{duration:0.9});
+ $('#cityJumps').querySelectorAll('button').forEach(function(button){button.classList.remove('active')});
+ rmsg('Showing '+item.name+'. Zoom in to neighbourhood level to load locally mapped places.');
+};
+$('#locateMe').onclick=function(){
+ if(!navigator.geolocation){rmsg('Device location is not available in this browser.',1);return;}
+ rmsg('Waiting for browser location permission…');
+ navigator.geolocation.getCurrentPosition(function(position){
+  if(!RM)return;
+  var point=[position.coords.latitude,position.coords.longitude];
+  RM.flyTo(point,15,{duration:0.8});
+  rmsg('Map centred on your device location. Your coordinates are not sent to the route service until you select this point as a trip endpoint.');
+ },function(error){rmsg(error.code===1?'Location permission was denied. You can still search or select points on the map.':'Could not determine your location. You can still use map search.',1)}, {enableHighAccuracy:false,timeout:10000,maximumAge:60000});
+};
+$('#cityJumps').onclick=function(event){
+ const button=event.target.closest('button[data-city]');
+ if(!button)return;
+ const city=QUICK_CITIES[button.dataset.city];
+ if(!city||!RM)return;
+ RM.flyTo(city.center,city.zoom,{duration:0.9});
+ $('#cityJumps').querySelectorAll('button').forEach(function(item){item.classList.toggle('active',item===button)});
+ $('#indiaState').value='';
+ rmsg('Map centred on '+city.name+'. Search for a road or landmark, or zoom in to load mapped places.');
 };
 // ---- curated Bengaluru places (positions approximate) ----
 const CC={m:['🚇','Namma Metro · Green Line','#16834a'],b:['🛍️','Malls, shops & stores','#b7791f'],h:['🏥','Hospitals & clinics','#cf5353'],f:['🍽️','Restaurants & cafes','#b7791f'],t:['🛕','Temples & worship','#7a6a5b'],p:['🌳','Parks, lakes & grounds','#4d956d'],e:['🎓','Schools & colleges','#3b74b8'],g:['🛏️','PG & stays','#78659e'],x:['🚌','Bus, rail, civic & theatres','#687789'],a:['📍','Area','#64748b']};
