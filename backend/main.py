@@ -156,6 +156,9 @@ async def health_check() -> dict:
         "routing_provider": "FOSSGIS OSRM",
         "place_search_provider": "Photon / OpenStreetMap",
         "route_safety": "bounded snapping and road-name-aware alternatives",
+        "geographic_coverage": "Worldwide OpenStreetMap routing profiles; coverage depends on mapped and connected roads.",
+        "search_coverage": "Global Photon / OpenStreetMap place search.",
+        "usage_note": "Shared public services are best-effort and intended for reasonable demonstration usage.",
     }
 
 
