@@ -10,10 +10,52 @@ This update adds a JAIN Global Campus / Jakkasandra / Harohalli directory and mo
 - Existing Plus Code-based pins are labelled approximate and should be checked against the actual building entrance.
 - The JAIN Main Gate is the recommended road-access point. The campus-ground reference and the DSU campus/building reference are marked as non-road-access references in the popups.
 - Dynamic OpenStreetMap place categories now distinguish hotels from hostels/PGs.
-- The optional road-line overlay is less cluttered: it omits `unclassified`, generic `road`, and `service` ways.
-- Route preference selector: Prefer named roads, Balanced route, or Fastest route.
+- Optional road overlay filters cover main roads, local/residential streets, service roads, and mapped tracks, paths, footways, cycleways, and pedestrian ways.
+- Route preference selector wired to the backend: Prefer named roads, Balanced route, or Fastest route.
+- Alternative comparison includes distance, estimated time, and road-name/reference-tag coverage.
 - The backend uses OSRM's `radiuses` parameter (150 m by default) to limit how far route endpoints may snap to a mapped road, and requests up to three route alternatives where available.
+- The route panel explains the OSRM engine and the application's own alternative-ranking formulas. The hosted provider's active CH/MLD search mode is not exposed by its public response.
 - Route details show the proportion of named/reference-tagged versus unnamed route-step distance and flags unnamed segments.
+
+
+## Authentication and request flow
+
+### Does this repository implement authentication?
+
+No. The current project has no user accounts, login/logout flow, password storage, session cookies, JWTs, OAuth flow, bearer tokens, API keys, or refresh tokens. The browser calls the project's FastAPI endpoints without an Authorization header. The backend calls public Photon and FOSSGIS OSRM endpoints without API credentials.
+
+The CORS setup in `backend/main.py` is not authentication. It restricts which browser origins may read responses, uses `allow_credentials=False`, and allows the `Content-Type` request header. A non-browser client can still call a publicly reachable API unless deployment-level access controls are added. `FRONTEND_ORIGINS` in `.env` is an origin allow-list, not a secret or token.
+
+### Components
+
+- **Browser UI — `docs/index.html`:** Leaflet displays the map and route geometry. The page sends JSON requests to the FastAPI backend. Map tiles and the optional Overpass road/POI overlays are loaded separately by the browser.
+- **API — `backend/main.py`:** FastAPI validates input with Pydantic models and query constraints, applies in-memory caching/rate spacing, and proxies requests to public search and routing services.
+- **Place search — Photon:** `GET /api/search` calls Photon/OpenStreetMap and converts GeoJSON features into compact place records.
+- **Routing — FOSSGIS-hosted OSRM:** `POST /api/route` validates coordinates and travel profile, requests route geometry and turn steps, then ranks the alternatives using the selected preference.
+
+### Request flow
+
+1. The browser requests `GET /api/search?q=...`. FastAPI validates and normalises the query, checks its five-minute in-memory cache, calls Photon if needed, normalises results, and returns JSON.
+2. The user selects a start and destination. The browser posts coordinates, a profile (`driving-car`, `foot-walking`, or `cycling-regular`), and a preference (`named_roads`, `balanced`, or `fastest`) to `POST /api/route`.
+3. FastAPI validates the request, selects the matching public OSRM server, applies a bounded snapping radius, requests GeoJSON route geometry, turn steps, and up to three alternatives, then converts the response to the app's feature format.
+4. The backend scores the returned alternatives. The browser draws the candidate routes, highlights the selected one, and displays distance, ETA, road-name-tag coverage, and turn-by-turn steps.
+
+### How credentials and tokens are handled
+
+There are currently no application credentials or user tokens to issue, store, refresh, or revoke. The backend sends a descriptive User-Agent header to Photon and OSRM; this identifies the educational client and is not a credential. The local `.env` file only needs `FRONTEND_ORIGINS` for CORS and is excluded by `.gitignore`. Do not put future API secrets in `docs/index.html`, because browser code is visible to visitors.
+
+For a deployment that needs protected user data or actions, add server-validated authentication (for example, secure sessions or OAuth/OIDC), enforce authorization on protected endpoints, and keep provider secrets in server-side environment variables. CORS alone is not an access-control boundary.
+
+## Routing algorithm used by the project
+
+The live map route is calculated by the external **OSRM Route service**, not by the Graph Lab's in-browser Dijkstra/A* demonstrations. OSRM supports **Contraction Hierarchies (CH)** and **Multi-Level Dijkstra (MLD)** routing modes. The current FOSSGIS-hosted endpoint does not expose which mode is enabled, so this repository cannot safely identify its active mode. See the [OSRM project documentation](https://github.com/Project-OSRM/osrm-backend) for supported modes.
+
+Smart Route applies its own ranking after OSRM returns candidate routes:
+- **Prefer named roads:** `0.62 × duration ratio + 0.38 × unnamed-distance ratio`.
+- **Balanced:** `0.80 × duration ratio + 0.20 × unnamed-distance ratio`.
+- **Fastest:** duration ratio only.
+
+This ranks only the candidate routes supplied by OSRM. It does not create roads, guarantee three alternatives, prove that an unnamed segment is unpaved, or establish that a path is open to the selected travel mode. The road overlay is a visual OpenStreetMap layer and is separate from the router's road graph.
 
 ## Important limitation about unnamed roads
 
