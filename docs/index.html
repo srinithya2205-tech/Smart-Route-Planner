@@ -463,6 +463,28 @@ body[data-theme="dark"] .boot-foot{color:#7f8b9b}
 @media(max-width:760px){.nav-tools{margin-left:0}.theme-toggle #themeLabel{display:none}nav{gap:3px}nav a{font-size:13px;padding:6px 9px}.boot-card{padding:20px}.boot-visual{height:150px}}
 @media(prefers-reduced-motion:reduce){#scene-bg{display:none}.boot-grid-lines,.boot-route{animation:none}.boot-runner{display:none}*{scroll-behavior:auto!important;transition:none!important}}
 
+
+.road-overlay-controls{display:flex;flex-direction:column;gap:8px;margin:0 0 8px;padding:10px 12px;border:1px solid var(--bd);border-radius:12px;background:var(--card)}
+.road-filter-list{display:flex;flex-wrap:wrap;gap:8px 16px}
+.road-filter-list label{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--tx);cursor:pointer}
+.road-filter-list input{accent-color:var(--cy)}
+.road-overlay-help{font-size:11px;line-height:1.5;color:var(--mu);margin:0}
+.route-algorithm-note{font-size:12px;line-height:1.6;color:var(--mu);padding:10px 12px;margin:0 0 10px;border-left:3px solid var(--cy);background:var(--card);border-radius:0 10px 10px 0}
+.route-algorithm-note b{color:var(--tx)}
+
+.india-explorer{display:flex;align-items:flex-end;gap:10px;flex-wrap:wrap;margin:10px 0}
+.india-explorer .f{min-width:min(100%,300px);flex:1}
+.india-explorer button{min-height:40px}
+.india-explorer select{background:var(--bg2);color:var(--tx);border:1px solid var(--bd);border-radius:10px;padding:10px;width:100%;font:inherit}
+.city-jumps{display:flex;gap:7px;flex-wrap:wrap}
+.city-jumps button{font-size:12px;padding:7px 10px}
+.blr-directory{margin:0 0 10px;border:1px dashed var(--bd);border-radius:12px;padding:9px 12px;background:var(--card)}
+.blr-directory summary{cursor:pointer;color:var(--mu);font-size:12px;font-weight:700}
+.blr-directory[open] .chips{padding-top:10px}
+.poi-filter-panel{display:flex;flex-wrap:wrap;align-items:center;gap:7px 14px;padding:9px 11px;margin:0 0 8px;border:1px solid var(--bd);border-radius:10px;background:var(--card)}
+.poi-filter-panel b{font-size:11px;color:var(--mu);text-transform:uppercase;letter-spacing:.05em}
+.poi-filter-panel label{display:inline-flex;gap:5px;align-items:center;font-size:12px;color:var(--tx);cursor:pointer}
+.poi-filter-panel input{accent-color:var(--cy)}
 </style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css"></head><body data-theme="light">
 <div id="bootScreen" class="boot-screen" role="status" aria-live="polite" aria-label="Loading Smart Route">
@@ -488,22 +510,23 @@ body[data-theme="dark"] .boot-foot{color:#7f8b9b}
 <main>
 <section class="pg" id="home">
 <div class="hero hero-modern">
-  <span class="eyebrow">ROUTE PLANNING · GRAPH THEORY · OPEN MAP DATA</span>
-  <h1>Plan a route. Understand the network behind it.</h1>
-  <p>SMART ROUTE brings practical road routing together with an interactive graph-learning lab. Search places, compare routes, and explore the algorithms that make networks work.</p>
+  <span class="eyebrow">INDIA-WIDE MAPS · ROUTE ENGINEERING · GRAPH THEORY</span>
+  <h1>Explore India’s roads. Understand the algorithms behind every route.</h1>
+  <p>Search across Indian states and cities, inspect mapped neighbourhood roads, plan intercity journeys, compare alternatives, and learn the graph algorithms that power route planning. Built with OpenStreetMap, Leaflet, Python and FastAPI.</p>
   <div class="row">
     <button class="pri" onclick="goPage('real')">Open route planner</button>
     <button onclick="goPage('sim')">Explore Graph Lab</button>
     <button onclick="goPage('learn')">Start learning</button>
   </div>
-  <div class="home-proof"><span>Global place search</span><span>Driving · Walking · Cycling</span><span>Python FastAPI backend</span><span>Interactive graph algorithms</span></div>
+  <div class="home-proof"><span>28 states · 8 union territories</span><span>Worldwide place search</span><span>Driving · Walking · Cycling</span><span>Python FastAPI + OSRM</span></div>
 </div>
 <div class="grid g3 home-features">
   <div class="card"><span class="feature-icon">⌖</span><h3>Explore real places</h3><p class="mu">Search cities, streets, landmarks and mapped businesses using OpenStreetMap-based place search. Pan the map to explore a new area.</p><button class="text-button" onclick="goPage('real')">Open map →</button></div>
   <div class="card"><span class="feature-icon">↗</span><h3>See how routes work</h3><p class="mu">Request road routes through the Python backend and inspect distance, estimated duration, alternatives and step-by-step directions.</p><button class="text-button" onclick="goPage('real')">Plan a route →</button></div>
   <div class="card"><span class="feature-icon">⌘</span><h3>Learn by experimenting</h3><p class="mu">Build small graphs, change edge weights, run algorithms and then use curated visual explanations and course material to go deeper.</p><button class="text-button" onclick="goPage('learn')">Browse learning path →</button></div>
 </div>
-<div class="card project-note"><b>What this project is</b><p class="mu">A student-built route-planning and graph-theory learning project. Its map routes come from a public OpenStreetMap-based routing service; it is not a replacement for a commercial navigation service and does not currently provide live traffic conditions.</p></div>
+<div class="card project-note"><b>What this project is</b><p class="mu">An educational routing and graph-theory project with an India-first map experience. The map and route services use global OpenStreetMap-based data where roads are mapped and connected. Estimated times are not live-traffic predictions, and the public services are best-effort rather than production navigation infrastructure.</p></div>
+<div class="card project-note"><b>Engineering highlights</b><div class="grid g3"><div><h4>Map &amp; geospatial data</h4><p class="mu">Leaflet, OpenStreetMap tiles, Photon geocoding and viewport-based Overpass queries for visible roads and places.</p></div><div><h4>Backend &amp; routing</h4><p class="mu">Python FastAPI validates coordinates and travel profiles, calls FOSSGIS-hosted OSRM, and ranks returned alternatives.</p></div><div><h4>Algorithms &amp; learning</h4><p class="mu">Interactive Graph Lab demonstrations for Dijkstra, A*, BFS, DFS, Bellman-Ford, Prim and Kruskal.</p></div></div><p class="mu"><b>Portfolio note:</b> This project demonstrates frontend integration, API design, geospatial data handling, routing, algorithm visualisation and technical documentation. It is a learning project, not a live-traffic navigation product.</p></div>
 </section>
 
 <section class="pg" id="sim"><div class="ph"><span class="eyebrow">Graph lab</span><h2>Interactive Simulator</h2><p class="mu">Build a network, and the app recommends the best algorithm for it, then replays every step.</p></div>
@@ -520,13 +543,13 @@ body[data-theme="dark"] .boot-foot{color:#7f8b9b}
 <div class="card"><div class="pt"><span class="num">3</span>Watch it work</div><div class="trow"><div class="seg"><button id="pv" aria-label="Previous step">◀</button><button id="pl">▶ Play</button><button id="nx" aria-label="Next step">▶|</button><button id="end">End</button></div><select id="spd" aria-label="Playback speed"><option value="1200">Slow</option><option value="700" selected>Normal</option><option value="250">Fast</option></select></div><div class="mu sc">Shortcuts: ← → step, Space play/pause</div><div class="kpi" id="kp"></div><div id="stp" class="mu stp">Run an algorithm to see each step here.</div></div>
 </aside></div></section>
 
-<section class="pg" id="real"><div class="ph"><span class="eyebrow">GLOBAL MAP · OPENSTREETMAP DATA</span><h2>Route Planner</h2><p class="mu">Search for a place anywhere, choose a start and destination, then request driving, walking or cycling directions from the Python backend. Search coverage depends on what is mapped in OpenStreetMap.</p></div>
+<section class="pg" id="real"><div class="ph"><span class="eyebrow">GLOBAL MAP · OPENSTREETMAP DATA</span><h2>Route Planner</h2><p class="mu">Explore roads, neighbourhoods and destinations across India. Search any mapped place, jump to a state or major city, and plan driving, walking or cycling routes. Worldwide search and routing remain available too.</p></div>
 <div class="card ctrl"><div class="searchbar"><input id="rq" placeholder="Search any city, address, landmark or business" aria-label="Search any place" autocomplete="off"><button class="pri" id="rsb">Search places</button></div>
-<div id="rres" class="rres" aria-live="polite"></div><div class="city-jumps-wrap"><span class="city-jumps-label">Quick map views</span><div id="cityJumps" class="city-jumps"><button data-city="bengaluru">Bengaluru</button><button data-city="mysuru">Mysuru</button><button data-city="chennai">Chennai</button><button data-city="hyderabad">Hyderabad</button><button data-city="mumbai">Mumbai</button><button data-city="delhi">Delhi</button><button data-city="pune">Pune</button><button data-city="singapore">Singapore</button><button data-city="dubai">Dubai</button><button data-city="london">London</button><button data-city="paris">Paris</button><button data-city="tokyo">Tokyo</button><button data-city="newyork">New York</button><button data-city="sydney">Sydney</button></div></div>
-<div class="trow"><label class="f">Travel mode<select id="rmd"><option value="drive">Driving</option><option value="walk">Walking</option><option value="cycle">Cycling</option></select></label><label class="f">Map style<select id="rsty"><option value="1" selected>OpenStreetMap streets</option><option value="2">Esri streets</option><option value="3">Humanitarian OpenStreetMap</option><option value="4">Satellite (Esri)</option><option value="5">Terrain</option><option value="6">Monochrome streets</option></select></label><div class="auto"><span class="star">★</span> Python-powered road routing</div></div>
-<div id="rmsg" class="mu">Search globally or select a quick map view. Zoom in to load mapped shops, services and other points of interest from OpenStreetMap. Local curated pins are available around Bengaluru; global search and visible-map POIs help you explore other regions.</div></div>
+<div id="rres" class="rres" aria-live="polite"></div><div class="india-explorer"><label class="f">Explore an Indian state or union territory<select id="indiaState"><option value="">Choose a state / UT</option><optgroup label="States"><option value="andhra-pradesh">Andhra Pradesh</option><option value="arunachal-pradesh">Arunachal Pradesh</option><option value="assam">Assam</option><option value="bihar">Bihar</option><option value="chhattisgarh">Chhattisgarh</option><option value="goa">Goa</option><option value="gujarat">Gujarat</option><option value="haryana">Haryana</option><option value="himachal-pradesh">Himachal Pradesh</option><option value="jharkhand">Jharkhand</option><option value="karnataka">Karnataka</option><option value="kerala">Kerala</option><option value="madhya-pradesh">Madhya Pradesh</option><option value="maharashtra">Maharashtra</option><option value="manipur">Manipur</option><option value="meghalaya">Meghalaya</option><option value="mizoram">Mizoram</option><option value="nagaland">Nagaland</option><option value="odisha">Odisha</option><option value="punjab">Punjab</option><option value="rajasthan">Rajasthan</option><option value="sikkim">Sikkim</option><option value="tamil-nadu">Tamil Nadu</option><option value="telangana">Telangana</option><option value="tripura">Tripura</option><option value="uttar-pradesh">Uttar Pradesh</option><option value="uttarakhand">Uttarakhand</option><option value="west-bengal">West Bengal</option></optgroup><optgroup label="Union territories"><option value="andaman-nicobar">Andaman and Nicobar Islands</option><option value="chandigarh">Chandigarh</option><option value="dadra-nagar-haveli-daman-diu">Dadra and Nagar Haveli and Daman and Diu</option><option value="delhi-utc">Delhi</option><option value="jammu-kashmir">Jammu and Kashmir</option><option value="ladakh">Ladakh</option><option value="lakshadweep">Lakshadweep</option><option value="puducherry">Puducherry</option></optgroup></select></label><button type="button" id="indiaOverview">View all India</button><button type="button" id="locateMe">◎ My location</button></div><div class="city-jumps-wrap"><span class="city-jumps-label">Major Indian cities</span><div id="cityJumps" class="city-jumps"><button data-city="bengaluru">Bengaluru</button><button data-city="mysuru">Mysuru</button><button data-city="chennai">Chennai</button><button data-city="hyderabad">Hyderabad</button><button data-city="mumbai">Mumbai</button><button data-city="delhi">Delhi</button><button data-city="pune">Pune</button><button data-city="kolkata">Kolkata</button><button data-city="ahmedabad">Ahmedabad</button><button data-city="jaipur">Jaipur</button><button data-city="lucknow">Lucknow</button><button data-city="bhopal">Bhopal</button><button data-city="kochi">Kochi</button><button data-city="guwahati">Guwahati</button><button data-city="srinagar">Srinagar</button><button data-city="visakhapatnam">Visakhapatnam</button><button data-city="bhubaneswar">Bhubaneswar</button><button data-city="patna">Patna</button><button data-city="coimbatore">Coimbatore</button><button data-city="indore">Indore</button></div></div>
+<div class="india-explorer"><label class="f">Try a sample India intercity route<select id="indiaCorridor"><option value="blr-chn">Bengaluru → Chennai</option><option value="mum-pun">Mumbai → Pune</option><option value="del-jai">Delhi → Jaipur</option><option value="hyd-vij">Hyderabad → Vijayawada</option><option value="kol-bhu">Kolkata → Bhubaneswar</option><option value="guw-shi">Guwahati → Shillong</option></select></label><button type="button" id="runCorridor">Plan sample route</button></div><div class="trow"><label class="f">Travel mode<select id="rmd"><option value="drive">Driving</option><option value="walk">Walking</option><option value="cycle">Cycling</option></select></label><label class="f">Route preference<select id="rrank"><option value="named_roads">Prefer named roads</option><option value="balanced">Balanced</option><option value="fastest">Fastest estimated time</option></select></label><label class="f">Map style<select id="rsty"><option value="1" selected>OpenStreetMap streets</option><option value="2">Esri streets</option><option value="3">Humanitarian OpenStreetMap</option><option value="4">Satellite (Esri)</option><option value="5">Terrain</option><option value="6">Monochrome streets</option></select></label><div class="auto"><span class="star">★</span> Python-powered road routing</div></div>
+<div class="route-algorithm-note"><b>Which algorithm is used?</b> Real-map routes are calculated by the OSRM routing engine. Smart Route then ranks the returned alternatives: Prefer named roads weights estimated time (62%) and unnamed-road distance (38%); Balanced uses 80% time and 20% unnamed-road distance; Fastest ranks by estimated time. OSRM can run Contraction Hierarchies (CH) or Multi-Level Dijkstra (MLD), but the public FOSSGIS endpoint does not report which mode it uses. Dijkstra and A* in Graph Lab are separate teaching demonstrations.</div><div id="rmsg" class="mu">Search globally or select a quick map view. Zoom in to load mapped shops, services and other points of interest from OpenStreetMap. Local curated pins are available around Bengaluru; global search and visible-map POIs help you explore other regions.</div></div>
 
-<div class="sim"><div class="rmapw"><div id="rflt" class="chips"></div><label class="tg" style="margin:0 0 6px 0"><input type="checkbox" id="rroads"> Load extra road-line overlay (optional; base map already shows roads)</label><div id="rmap"></div><div class="map-diagnostics"><span id="tileStatus" role="status">Map tiles: waiting to load</span><span id="poiStatus" role="status">Places: zoom in to load mapped points</span><button type="button" id="retryTiles">Retry map</button></div><div class="legend">Bengaluru curated references: 🚇 Metro · 🏥 Healthcare · 🍽️ Food · 🛏️ Stays · 🎓 Education · 🌳 Parks. In any map area, zoom in to load available OpenStreetMap points of interest. Place coverage and naming quality vary by region.</div></div><div class="card rside"><div class="route-side-heading"><b>Trip details</b><span class="tag">Python backend</span></div><div id="rrec" class="rec" aria-live="polite"><p class="mu">Choose a start and destination by searching or clicking the map. Route details will appear here.</p></div><div class="kpi" id="rkp"></div><div id="rcmp" style="overflow:auto"></div><div id="rgraph" style="overflow:auto;margin:8px 0"></div><button id="rrs">Clear route</button><p class="side-disclaimer">Estimated travel time is based on the routing service and is not live-traffic data.</p></div></div></section>
+<div class="sim"><div class="rmapw"><details class="blr-directory"><summary>Bengaluru local directory · JAIN campus, Jakkasandra and Harohalli curated pins</summary><label class="tg" style="margin:8px 0 0"><input type="checkbox" id="showBengaluruDirectory"> Show curated Bengaluru pins</label><div id="rflt" class="chips"></div></details><div class="poi-filter-panel" id="osmPoiFilters"><b>Map places</b><label><input type="checkbox" data-poi-filter="food" checked> Food</label><label><input type="checkbox" data-poi-filter="groc" checked> Groceries</label><label><input type="checkbox" data-poi-filter="shop" checked> Shops</label><label><input type="checkbox" data-poi-filter="med" checked> Healthcare</label><label><input type="checkbox" data-poi-filter="stay" checked> Stays</label><label><input type="checkbox" data-poi-filter="svc" checked> Public places</label></div><div class="road-overlay-controls"><label class="tg" style="margin:0"><input type="checkbox" id="rroads"> Show detailed mapped roads and paths</label><div class="road-filter-list" aria-label="Road types to display"><label><input class="road-filter" type="checkbox" id="roadMajor" checked> Main roads</label><label><input class="road-filter" type="checkbox" id="roadLocal" checked> Local and residential streets</label><label><input class="road-filter" type="checkbox" id="roadService" checked> Service roads</label><label><input class="road-filter" type="checkbox" id="roadPaths" checked> Tracks, footways and cycleways</label></div><p class="road-overlay-help">The overlay displays mapped OpenStreetMap ways. Whether a way can be routed depends on its access tags and the selected driving, walking or cycling profile.</p></div><div id="rmap"></div><div class="map-diagnostics"><span id="tileStatus" role="status">Map tiles: waiting to load</span><span id="poiStatus" role="status">Places: zoom in to load mapped points</span><button type="button" id="retryTiles">Retry map</button></div><div class="legend">India-wide map powered by OpenStreetMap. Zoom to a city or neighbourhood to load locally mapped places. The optional curated Bengaluru directory is a separate local dataset and does not limit the nationwide map.</div></div><div class="card rside"><div class="route-side-heading"><b>Trip details</b><span class="tag">Python backend</span></div><div id="rrec" class="rec" aria-live="polite"><p class="mu">Choose a start and destination by searching or clicking the map. Route details will appear here.</p></div><div class="kpi" id="rkp"></div><div id="rcmp" style="overflow:auto"></div><div id="rgraph" style="overflow:auto;margin:8px 0"></div><button id="rrs">Clear route</button><p class="side-disclaimer">Estimated travel time is based on the routing service and is not live-traffic data.</p></div></div></section>
 <section class="pg" id="learn">
 <div class="ph"><span class="eyebrow">LEARN · VISUALISE · APPLY</span><h2>Graph &amp; Routing Learning Studio</h2><p class="mu">Start with the building blocks, see each algorithm in action, then follow trusted tutorials and lecture material to study the concept in depth.</p></div>
 <div class="card learn-guide">
@@ -783,7 +806,7 @@ $('#scn').onchange=()=>{scn=$('#scn').value;try{localStorage.setItem('sr_scn',sc
 $('#swp').onclick=()=>{const had=!!R,s=$('#src').value;$('#src').value=$('#dst').value;$('#dst').value=s;clr();draw();if(had)go()};
 addEventListener('keydown',e=>{if(!$('#sim').classList.contains('on')||/INPUT|SELECT|TEXTAREA/.test(e.target.tagName))return;if(e.key=='ArrowRight')stepTo(cur+1);else if(e.key=='ArrowLeft')stepTo(cur-1);else if(e.key==' '){e.preventDefault();$('#pl').click()}});
 // ---- global route planner and OpenStreetMap place data ----
-let RM,rRt,rMk,rPoiL,rSel,rRoad,rS=null,rD=null,radj,rpos,rTok=0,rGo=0,rPT=null,rRoadTimer=null,rRoadToken=0,nPoi=0,sTok=0,sRes=[];const seen=new Set();
+let RM,rRt,rMk,rPoiL,rSel,rRoad,rS=null,rD=null,radj,rpos,rTok=0,rGo=0,rPT=null,rRoadTimer=null,rRoadToken=0,nPoi=0,sTok=0,sRes=[],osmPoiMarkers=[];const seen=new Set(),poiFilterState={food:true,groc:true,shop:true,med:true,stay:true,svc:true};
 const BLR=[12.6505,77.4455];
 const mh=(a,b)=>{const r=Math.PI/180,dl=(b[0]-a[0])*r,dn=(b[1]-a[1])*r,k=Math.sin(dl/2)**2+Math.cos(a[0]*r)*Math.cos(b[0]*r)*Math.sin(dn/2)**2;return 12742000*Math.asin(Math.sqrt(k))};
 const rmsg=(t,e)=>{$('#rmsg').textContent=t;$('#rmsg').classList.toggle('status-error',!!e)};
@@ -865,13 +888,13 @@ function tryFallback(failedIndex){
 const pop=(t,sub,la,lo)=>`<b>${esc(t)}</b><div class="pp">${sub}</div><div class="pb"><button data-use="s" data-la="${la}" data-lo="${lo}" data-nm="${esc(t)}">Set as start</button><button data-use="d" data-la="${la}" data-lo="${lo}" data-nm="${esc(t)}">Set as destination</button></div>`;
 function rinit(){if(RM){setTimeout(()=>RM.invalidateSize(),60);return}
  if(!window.L){rmsg('The map library could not load. Open this page with internet access.',1);return}
- RM=L.map('rmap',{minZoom:2,zoomSnap:.5,zoomDelta:.5,wheelPxPerZoomLevel:100,preferCanvas:true}).setView([12.9716,77.5946],12);$('#rsty').value='1';useTiles(1,true);
+ RM=L.map('rmap',{minZoom:2,maxZoom:19,zoomSnap:.5,zoomDelta:.5,wheelPxPerZoomLevel:100,preferCanvas:true}).setView([22.8,82.3],5.1);$('#rsty').value='1';useTiles(1,true);
  $('#retryTiles').onclick=()=>useTiles(+$('#rsty').value||1,true);
- rRoad=L.layerGroup().addTo(RM);rPoiL=L.layerGroup().addTo(RM);rRt=L.layerGroup().addTo(RM);rSel=L.layerGroup().addTo(RM);rMk=L.layerGroup().addTo(RM);cpInit();$('#rroads').onchange=()=>{rRoadToken++;if($('#rroads').checked){loadStreetOverlay()}else rRoad.clearLayers()};
+ rRoad=L.layerGroup().addTo(RM);rPoiL=L.layerGroup().addTo(RM);rRt=L.layerGroup().addTo(RM);rSel=L.layerGroup().addTo(RM);rMk=L.layerGroup().addTo(RM);cpInit();document.querySelectorAll('[data-poi-filter]').forEach(input=>input.onchange=()=>{poiFilterState[input.dataset.poiFilter]=input.checked;applyOsmPoiFilters()});$('#showBengaluruDirectory').onchange=()=>{if($('#showBengaluruDirectory').checked)rCur.addTo(RM);else if(RM.hasLayer(rCur))RM.removeLayer(rCur)};const refreshRoadOverlay=()=>{rRoadToken++;if($('#rroads').checked){loadStreetOverlay()}else rRoad.clearLayers()};$('#rroads').onchange=refreshRoadOverlay;document.querySelectorAll('.road-filter').forEach(input=>input.onchange=refreshRoadOverlay);
  RM.on('click',e=>rpickAt(e.latlng.lat,e.latlng.lng));
  RM.on('popupopen',e=>e.popup.getElement().querySelectorAll('[data-use]').forEach(b=>b.onclick=()=>{RM.closePopup();rpickAt(+b.dataset.la,+b.dataset.lo,b.dataset.nm,b.dataset.use)}));
  const zc=()=>{const c=RM.getContainer(),z=RM.getZoom();c.classList.toggle('zl',z>=17);[13,14,15,16].forEach(k=>c.classList.toggle('z'+k,z>=k))};RM.on('zoomend',zc);zc();
- RM.on('moveend',()=>{clearTimeout(rPT);clearTimeout(rRoadTimer);if(RM.getZoom()>=14&&$('#rroads').checked)rRoadTimer=setTimeout(loadStreetOverlay,1000);if(RM.getZoom()<16){poiStatus('Zoom in closer to load mapped shops, services and public places');return}rPT=setTimeout(loadPoi,900)});
+ RM.on('moveend',()=>{clearTimeout(rPT);clearTimeout(rRoadTimer);if(RM.getZoom()>=14&&$('#rroads').checked)rRoadTimer=setTimeout(loadStreetOverlay,1000);if(RM.getZoom()<14){poiStatus('Zoom to a city or neighbourhood (level 14+) to load locally mapped places');return}rPT=setTimeout(loadPoi,1100)});
  setTimeout(()=>RM.invalidateSize(),60)}
 // ---- data (Overpass servers, with backups) ----
 const OVP=['https://overpass-api.de/api/interpreter','https://overpass.kumi.systems/api/interpreter','https://overpass.private.coffee/api/interpreter'];
@@ -879,15 +902,20 @@ async function ovp(q,ms){let le;for(const u of OVP){try{const r=await fetch(u,{m
 async function loadStreetOverlay(){
  if(!RM||!rRoad||!$('#rroads').checked||RM.getZoom()<14)return;
  const token=++rRoadToken,b=RM.getBounds(),A=`(${[b.getSouth(),b.getWest(),b.getNorth(),b.getEast()].map(x=>x.toFixed(5)).join(',')})`;
- const q=`[out:json][timeout:35];way[highway~"^(motorway|trunk|primary|secondary|tertiary|unclassified|residential|living_street|road|service)$"]${A};out geom;`;
+ const roadGroups={roadMajor:["motorway","trunk","primary","secondary","tertiary"],roadLocal:["unclassified","residential","living_street","road"],roadService:["service"],roadPaths:["track","path","footway","cycleway","bridleway","steps","pedestrian"]};
+ const selectedTypes=Object.entries(roadGroups).filter(([id])=>$("#"+id).checked).flatMap(([,types])=>types);
+ if(!selectedTypes.length){rRoad.clearLayers();rmsg("Select at least one road type to display in the overlay.");return}
+ const roadPattern=selectedTypes.join("|");
+ const q="[out:json][timeout:35];way[highway~\"^("+roadPattern+")$\"]"+A+";out tags geom;";
  try{
   const j=await ovp(q,40000);if(token!==rRoadToken||!$('#rroads').checked)return;
   rRoad.clearLayers();let count=0;
   for(const w of (j.elements||[])){
    if(!w.geometry||w.geometry.length<2)continue;
    const pts=w.geometry.map(p=>[p.lat,p.lon]);if(pts.some(p=>!Number.isFinite(p[0])||!Number.isFinite(p[1])))continue;
-   const hw=(w.tags||{}).highway||'';const major=/^(motorway|trunk|primary|secondary)$/.test(hw);
-   const line=L.polyline(pts,{color:major?'#9aaec5':'#c7d2df',weight:major?3.2:1.8,opacity:major?.82:.62,lineCap:'round',lineJoin:'round',interactive:false});
+   const tags=w.tags||{},hw=tags.highway||'';const major=/^(motorway|trunk|primary|secondary|tertiary)$/.test(hw),path=/^(track|path|footway|cycleway|bridleway|steps|pedestrian)$/.test(hw),service=hw==='service';
+   const line=L.polyline(pts,{color:major?'#8aa9ca':path?'#b58ad8':service?'#d3a35d':'#b8c8d8',weight:major?3.2:path?2.2:service?1.7:2,opacity:major?.88:path?.78:.68,dashArray:path?'6 5':service?'2 4':null,lineCap:'round',lineJoin:'round'});
+   line.bindTooltip(esc(tags.name||'Unnamed mapped way')+' · '+esc(hw.replace(/_/g,' ')),{sticky:true});
    line.addTo(rRoad);count++;
   }
   if(count===0)rRoad.clearLayers();
@@ -897,12 +925,13 @@ async function loadStreetOverlay(){
 function addPoi(j){const els=j.elements.filter(e=>e.tags).sort((a,b)=>!!b.tags.name-!!a.tags.name);if(nPoi+els.length>3500){rPoiL.clearLayers();seen.clear();nPoi=0}let n=0;
  for(const e of els){const k=e.type+e.id;if(seen.has(k))continue;const t=e.tags,la=e.lat!=null?e.lat:e.center&&e.center.lat,lo=e.lon!=null?e.lon:e.center&&e.center.lon;if(la==null||lo==null)continue;const c=catOf(t);if(!c)continue;seen.add(k);
   const nm=t.name||t['name:en']||'',[em,cn,col]=CATS[c],kind=(t.shop||t.amenity||t.tourism||t.healthcare||t.building||t.leisure||t.natural||t.railway||t.highway||t.public_transport||'').replace(/_/g,' '),addr=[t['addr:housenumber'],t['addr:street'],t['addr:suburb']||t['addr:city']].filter(Boolean).join(', '),ph=t.phone||t['contact:phone'];
-  const m=L.marker([la,lo],{icon:L.divIcon({className:'poi',html:`<span style="--c:${col}">${em}</span>`,iconSize:[26,26],iconAnchor:[13,13]}),title:nm||cn}).bindPopup(pop(nm||kind||cn,esc(cn)+(kind?' · '+esc(kind):'')+(addr?'<br>'+esc(addr):'')+(ph?'<br>📞 '+esc(ph):'')+(t.opening_hours?'<br>🕒 '+esc(t.opening_hours):''),la,lo),{maxWidth:240}).addTo(rPoiL);
+  const m=L.marker([la,lo],{icon:L.divIcon({className:'poi',html:`<span style="--c:${col}">${em}</span>`,iconSize:[26,26],iconAnchor:[13,13]}),title:nm||cn}).bindPopup(pop(nm||kind||cn,esc(cn)+(kind?' · '+esc(kind):'')+(addr?'<br>'+esc(addr):'')+(ph?'<br>📞 '+esc(ph):'')+(t.opening_hours?'<br>🕒 '+esc(t.opening_hours):''),la,lo),{maxWidth:240});m._smartCategory=c;osmPoiMarkers.push(m);if(poiFilterState[c]!==false)m.addTo(rPoiL);
   if(nm)m.bindTooltip(esc(nm),{permanent:true,direction:'right',offset:[12,0],className:'pn'});nPoi++;n++}
  return n}
-async function loadPoi(){if(!RM||RM.getZoom()<16)return;const tok=++rTok,quiet=rS||rD||sRes.length,b=RM.getBounds(),A=`(${[b.getSouth(),b.getWest(),b.getNorth(),b.getEast()].map(x=>x.toFixed(5)).join(',')})`;
- if(!quiet)rmsg('Loading shops, medical stores and PGs in this view…');
- const q=`[out:json][timeout:45];(nwr${A}[shop];nwr${A}[amenity~"^(pharmacy|clinic|hospital|doctors|dentist|veterinary|restaurant|cafe|fast_food|food_court|bar|pub|ice_cream|marketplace|hostel|school|kindergarten|college|university|bank|atm|fuel|place_of_worship|bus_station|post_office|police|fire_station|library|cinema|coworking_space|community_centre|charging_station)$"];nwr${A}[healthcare];nwr${A}[tourism~"^(hostel|guest_house|hotel|apartment|motel)$"];nwr${A}[building=dormitory];nwr${A}[leisure~"^(park|garden|playground|sports_centre|stadium|pitch|nature_reserve)$"];nwr${A}[natural~"^(water|wood|scrub)$"];nwr${A}[railway~"^(station|halt)$"];nwr${A}[highway=bus_stop];nwr${A}[public_transport~"^(station|platform)$"];nwr${A}[name~"(^| )PG( |$)|paying guest|hostel",i];);out center tags 3000;`;
+function applyOsmPoiFilters(){osmPoiMarkers.forEach(m=>{const visible=poiFilterState[m._smartCategory]!==false;if(visible&&!rPoiL.hasLayer(m))m.addTo(rPoiL);if(!visible&&rPoiL.hasLayer(m))rPoiL.removeLayer(m)})}
+async function loadPoi(){if(!RM||RM.getZoom()<14)return;const tok=++rTok,quiet=rS||rD||sRes.length,b=RM.getBounds(),A=`(${[b.getSouth(),b.getWest(),b.getNorth(),b.getEast()].map(x=>x.toFixed(5)).join(',')})`;
+ rPoiL.clearLayers();seen.clear();nPoi=0;if(!quiet)rmsg('Loading mapped places for this area from OpenStreetMap…');
+ const q=`[out:json][timeout:45];(nwr${A}[shop];nwr${A}[amenity~"^(pharmacy|clinic|hospital|doctors|dentist|veterinary|restaurant|cafe|fast_food|food_court|bar|pub|ice_cream|marketplace|hostel|school|kindergarten|college|university|bank|atm|fuel|place_of_worship|bus_station|post_office|police|fire_station|library|cinema|coworking_space|community_centre|charging_station)$"];nwr${A}[healthcare];nwr${A}[tourism~"^(hostel|guest_house|hotel|apartment|motel)$"];nwr${A}[building=dormitory];nwr${A}[leisure~"^(park|garden|playground|sports_centre|stadium|pitch|nature_reserve)$"];nwr${A}[natural~"^(water|wood|scrub)$"];nwr${A}[railway~"^(station|halt)$"];nwr${A}[highway=bus_stop];nwr${A}[public_transport~"^(station|platform)$"];nwr${A}[name~"(^| )PG( |$)|paying guest|hostel",i];nwr${A}[tourism~"^(attraction|museum|viewpoint|information)$"];nwr${A}[aeroway~"^(aerodrome|terminal)$"];);out center tags 1500;`;
  try{const j=await ovp(q,50000),n=addPoi(j);if(tok==rTok){poiStatus(`${nPoi.toLocaleString()} mapped places currently loaded in this view`);if(!quiet)rmsg(`${nPoi.toLocaleString()} mapped places loaded. Coverage depends on OpenStreetMap edits in this area.`)}}
  catch(e){if(tok==rTok){poiStatus('OpenStreetMap place markers are temporarily unavailable; place search and base map can still work.',true);if(!quiet)rmsg('The base map is available, but the extra place-marker service did not respond. Try again after moving the map or use place search.',1)}}}
 // ---- global place search (via the Python backend and Photon) ----
@@ -980,27 +1009,89 @@ $('#rq').onkeydown=e=>{if(e.key==='Enter')$('#rsb').click()};
 // Quick map views. These only position the map; place names and exact pins
 // still come from search or mapped OpenStreetMap features.
 const QUICK_CITIES={
- bengaluru:{name:'Bengaluru',center:[12.9716,77.5946],zoom:12},
- mysuru:{name:'Mysuru',center:[12.2958,76.6394],zoom:12},
- chennai:{name:'Chennai',center:[13.0827,80.2707],zoom:12},
- hyderabad:{name:'Hyderabad',center:[17.3850,78.4867],zoom:12},
- mumbai:{name:'Mumbai',center:[19.0760,72.8777],zoom:12},
- delhi:{name:'Delhi',center:[28.6139,77.2090],zoom:12},
- pune:{name:'Pune',center:[18.5204,73.8567],zoom:12},
- singapore:{name:'Singapore',center:[1.3521,103.8198],zoom:12},
- dubai:{name:'Dubai',center:[25.2048,55.2708],zoom:12},
- london:{name:'London',center:[51.5072,-0.1276],zoom:12},
- paris:{name:'Paris',center:[48.8566,2.3522],zoom:12},
- tokyo:{name:'Tokyo',center:[35.6762,139.6503],zoom:12},
- newyork:{name:'New York',center:[40.7128,-74.0060],zoom:12},
- sydney:{name:'Sydney',center:[-33.8688,151.2093],zoom:12}
+ bengaluru:{name:'Bengaluru',center:[12.9716,77.5946],zoom:12}, mysuru:{name:'Mysuru',center:[12.2958,76.6394],zoom:12},
+ chennai:{name:'Chennai',center:[13.0827,80.2707],zoom:12}, hyderabad:{name:'Hyderabad',center:[17.3850,78.4867],zoom:12},
+ mumbai:{name:'Mumbai',center:[19.0760,72.8777],zoom:12}, delhi:{name:'Delhi',center:[28.6139,77.2090],zoom:12},
+ pune:{name:'Pune',center:[18.5204,73.8567],zoom:12}, kolkata:{name:'Kolkata',center:[22.5726,88.3639],zoom:12},
+ ahmedabad:{name:'Ahmedabad',center:[23.0225,72.5714],zoom:12}, jaipur:{name:'Jaipur',center:[26.9124,75.7873],zoom:12},
+ lucknow:{name:'Lucknow',center:[26.8467,80.9462],zoom:12}, bhopal:{name:'Bhopal',center:[23.2599,77.4126],zoom:12},
+ kochi:{name:'Kochi',center:[9.9312,76.2673],zoom:12}, guwahati:{name:'Guwahati',center:[26.1445,91.7362],zoom:12},
+ srinagar:{name:'Srinagar',center:[34.0837,74.7973],zoom:12}, visakhapatnam:{name:'Visakhapatnam',center:[17.6868,83.2185],zoom:12},
+ bhubaneswar:{name:'Bhubaneswar',center:[20.2961,85.8245],zoom:12}, patna:{name:'Patna',center:[25.5941,85.1376],zoom:12},
+ coimbatore:{name:'Coimbatore',center:[11.0168,76.9558],zoom:12}, indore:{name:'Indore',center:[22.7196,75.8577],zoom:12}
 };
-$('#cityJumps').onclick=e=>{
- const button=e.target.closest('button[data-city]');if(!button)return;
- const city=QUICK_CITIES[button.dataset.city];if(!city||!RM)return;
- RM.flyTo(city.center,city.zoom,{duration:.9});
- $('#cityJumps').querySelectorAll('button').forEach(b=>b.classList.toggle('active',b===button));
- rmsg(`Map centred on ${city.name}. Search for a specific place or zoom in to load mapped points of interest.`);
+const INDIA_STATE_VIEWS={
+ 'andhra-pradesh':{name:'Andhra Pradesh',center:[16.5062,80.6480]}, 'arunachal-pradesh':{name:'Arunachal Pradesh',center:[27.0844,93.6053]},
+ assam:{name:'Assam',center:[26.1433,91.7898]}, bihar:{name:'Bihar',center:[25.5941,85.1376]},
+ chhattisgarh:{name:'Chhattisgarh',center:[21.2514,81.6296]}, goa:{name:'Goa',center:[15.4909,73.8278]},
+ gujarat:{name:'Gujarat',center:[23.2156,72.6369]}, haryana:{name:'Haryana',center:[30.7333,76.7794]},
+ 'himachal-pradesh':{name:'Himachal Pradesh',center:[31.1048,77.1734]}, jharkhand:{name:'Jharkhand',center:[23.3441,85.3096]},
+ karnataka:{name:'Karnataka',center:[12.9716,77.5946]}, kerala:{name:'Kerala',center:[8.5241,76.9366]},
+ 'madhya-pradesh':{name:'Madhya Pradesh',center:[23.2599,77.4126]}, maharashtra:{name:'Maharashtra',center:[19.0760,72.8777]},
+ manipur:{name:'Manipur',center:[24.8170,93.9368]}, meghalaya:{name:'Meghalaya',center:[25.5788,91.8933]},
+ mizoram:{name:'Mizoram',center:[23.7271,92.7176]}, nagaland:{name:'Nagaland',center:[25.6751,94.1086]},
+ odisha:{name:'Odisha',center:[20.2961,85.8245]}, punjab:{name:'Punjab',center:[30.7333,76.7794]},
+ rajasthan:{name:'Rajasthan',center:[26.9124,75.7873]}, sikkim:{name:'Sikkim',center:[27.3314,88.6138]},
+ 'tamil-nadu':{name:'Tamil Nadu',center:[13.0827,80.2707]}, telangana:{name:'Telangana',center:[17.3850,78.4867]},
+ tripura:{name:'Tripura',center:[23.8315,91.2868]}, 'uttar-pradesh':{name:'Uttar Pradesh',center:[26.8467,80.9462]},
+ uttarakhand:{name:'Uttarakhand',center:[30.3165,78.0322]}, 'west-bengal':{name:'West Bengal',center:[22.5726,88.3639]},
+ 'andaman-nicobar':{name:'Andaman and Nicobar Islands',center:[11.6234,92.7265]},
+ chandigarh:{name:'Chandigarh',center:[30.7333,76.7794]}, 'dadra-nagar-haveli-daman-diu':{name:'Dadra and Nagar Haveli and Daman and Diu',center:[20.3974,72.8328]},
+ 'delhi-utc':{name:'Delhi',center:[28.6139,77.2090]}, 'jammu-kashmir':{name:'Jammu and Kashmir',center:[34.0837,74.7973]},
+ ladakh:{name:'Ladakh',center:[34.1526,77.5771]}, lakshadweep:{name:'Lakshadweep',center:[10.5593,72.6358]},
+ puducherry:{name:'Puducherry',center:[11.9416,79.8083]}
+};
+function focusIndia(){
+ if(!RM)return;
+ RM.flyTo([22.8,82.3],5.1,{duration:0.9});
+ $('#indiaState').value='';
+ $('#cityJumps').querySelectorAll('button').forEach(function(button){button.classList.remove('active')});
+ rmsg('India overview. Search a place, choose a state or jump to a major city to explore its mapped road network.');
+}
+$('#indiaOverview').onclick=focusIndia;
+$('#indiaState').onchange=function(){
+ const item=INDIA_STATE_VIEWS[$('#indiaState').value];
+ if(!item||!RM)return;
+ RM.flyTo(item.center,7.4,{duration:0.9});
+ $('#cityJumps').querySelectorAll('button').forEach(function(button){button.classList.remove('active')});
+ rmsg('Showing '+item.name+'. Zoom in to neighbourhood level to load locally mapped places.');
+};
+$('#locateMe').onclick=function(){
+ if(!navigator.geolocation){rmsg('Device location is not available in this browser.',1);return;}
+ rmsg('Waiting for browser location permission…');
+ navigator.geolocation.getCurrentPosition(function(position){
+  if(!RM)return;
+  var point=[position.coords.latitude,position.coords.longitude];
+  RM.flyTo(point,15,{duration:0.8});
+  rmsg('Map centred on your device location. Your coordinates are not sent to the route service until you select this point as a trip endpoint.');
+ },function(error){rmsg(error.code===1?'Location permission was denied. You can still search or select points on the map.':'Could not determine your location. You can still use map search.',1)}, {enableHighAccuracy:false,timeout:10000,maximumAge:60000});
+};
+$('#cityJumps').onclick=function(event){
+ const button=event.target.closest('button[data-city]');
+ if(!button)return;
+ const city=QUICK_CITIES[button.dataset.city];
+ if(!city||!RM)return;
+ RM.flyTo(city.center,city.zoom,{duration:0.9});
+ $('#cityJumps').querySelectorAll('button').forEach(function(item){item.classList.toggle('active',item===button)});
+ $('#indiaState').value='';
+ rmsg('Map centred on '+city.name+'. Search for a road or landmark, or zoom in to load mapped places.');
+};
+const INDIA_CORRIDORS={
+ 'blr-chn':{name:'Bengaluru to Chennai',from:'Bengaluru',to:'Chennai',start:[12.9716,77.5946],end:[13.0827,80.2707]},
+ 'mum-pun':{name:'Mumbai to Pune',from:'Mumbai',to:'Pune',start:[19.0760,72.8777],end:[18.5204,73.8567]},
+ 'del-jai':{name:'Delhi to Jaipur',from:'Delhi',to:'Jaipur',start:[28.6139,77.2090],end:[26.9124,75.7873]},
+ 'hyd-vij':{name:'Hyderabad to Vijayawada',from:'Hyderabad',to:'Vijayawada',start:[17.3850,78.4867],end:[16.5062,80.6480]},
+ 'kol-bhu':{name:'Kolkata to Bhubaneswar',from:'Kolkata',to:'Bhubaneswar',start:[22.5726,88.3639],end:[20.2961,85.8245]},
+ 'guw-shi':{name:'Guwahati to Shillong',from:'Guwahati',to:'Shillong',start:[26.1445,91.7362],end:[25.5788,91.8933]}
+};
+$('#runCorridor').onclick=function(){
+ const trip=INDIA_CORRIDORS[$('#indiaCorridor').value];
+ if(!trip||!RM)return;
+ rS={la:trip.start[0],lo:trip.start[1],nm:trip.from};
+ rD={la:trip.end[0],lo:trip.end[1],nm:trip.to};
+ rGo++;ends();
+ RM.fitBounds([trip.start,trip.end],{padding:[50,50]});
+ rroute();
 };
 // ---- curated Bengaluru places (positions approximate) ----
 const CC={m:['🚇','Namma Metro · Green Line','#16834a'],b:['🛍️','Malls, shops & stores','#b7791f'],h:['🏥','Hospitals & clinics','#cf5353'],f:['🍽️','Restaurants & cafes','#b7791f'],t:['🛕','Temples & worship','#7a6a5b'],p:['🌳','Parks, lakes & grounds','#4d956d'],e:['🎓','Schools & colleges','#3b74b8'],g:['🛏️','PG & stays','#78659e'],x:['🚌','Bus, rail, civic & theatres','#687789'],a:['📍','Area','#64748b']};
@@ -1198,7 +1289,7 @@ const LOCAL_CP=[
 ];
 LOCAL_CP.forEach(p=>CP.push(p));
 const cFull=p=>p.nm+(p.c=='m'?' Metro Station':'');
-function cpInit(){rCur=L.layerGroup().addTo(RM);cMs=CP.filter(p=>p.c=='m').map(p=>[p.la,p.lo]);
+function cpInit(){rCur=L.layerGroup();cMs=CP.filter(p=>p.c=='m').map(p=>[p.la,p.lo]);
  L.polyline(cMs,{color:'#04101f',weight:9,opacity:.8}).addTo(rCur);L.polyline(cMs,{color:'#22c55e',weight:5}).bindTooltip('Green Line = path graph: '+cMs.length+' stations (vertices), '+(cMs.length-1)+' track sections (edges), '+(cMs.reduce((t,q,i)=>i?t+mh(cMs[i-1],q):0,0)/1000).toFixed(1)+' km',{sticky:true}).addTo(rCur);
  CP.forEach(p=>{const[em,cn,col]=CC[p.c];const mk=L.marker([p.la,p.lo],{icon:L.divIcon({className:'cpw',html:`<span class="cp c-${p.c}" style="--c:${col}"><i>${em}</i><em>${esc(p.nm)}</em></span>`,iconSize:[0,0]}),zIndexOffset:p.c=='m'?500:p.c=='a'?-500:0}).bindPopup(pop(cFull(p),esc(cn)+(p.sub?' · '+esc(p.sub):'')+'<br><small>'+(p.note|| (p.ap?'Approximate area pin; exact street position not verified':'Approximate position; verify locally'))+'<br>Graph role: vertex, snaps to the nearest road node</small>',p.la,p.lo),{maxWidth:240}).addTo(rCur);CPM.push({m:mk,p})});CPM.sort((a,b)=>PR[a.p.c]-PR[b.p.c]);
  const st=document.createElement('style');st.textContent=Object.keys(CC).map(k=>`#rmap.h-${k} .c-${k}{display:none!important}`).join('');document.head.appendChild(st);
@@ -1221,6 +1312,7 @@ function rpickAt(la,lo,nm,force){const p={la,lo,nm:nm||''};rGo++;rRt.clearLayers
  if(rS&&rD)rroute();else{rrec(RDEF);rmsg(which=='s'?'Start set'+(p.nm?': '+p.nm:'')+'. Now tap the destination.':'Destination set'+(p.nm?': '+p.nm:'')+'. Now tap the start.')}}
 $('#rrs').onclick=()=>{rS=rD=null;rGo++;if(rRt){rRt.clearLayers();rMk.clearLayers()}kp(null);$('#rcmp').innerHTML='';rrec(RDEF);rmsg('Cleared. Search for a place or tap the map to set a new start.')};
 $('#rmd').onchange=()=>{if(rS&&rD)rroute()};
+$('#rrank').onchange=()=>{if(rS&&rD)rroute()};
 // ---- Smart Route FastAPI + FOSSGIS OSRM integration ----
 let smartRouteFeatures = [];
 let smartRouteSelectedIndex = 0;
@@ -1312,7 +1404,8 @@ async function rroute() {
   const payload = {
     start: { lat: Number(rS.la), lon: Number(rS.lo) },
     destination: { lat: Number(rD.la), lon: Number(rD.lo) },
-    profile
+    profile,
+    road_preference: $('#rrank').value
   };
 
   rRt.clearLayers();
@@ -1361,10 +1454,12 @@ async function rroute() {
       ["Travel mode", mode === "cycle" ? "Cycling" : mode === "walk" ? "Walking" : "Driving"]
     ].map(item => `<div><small>${item[0]}</small><b>${item[1]}</b></div>`).join("");
 
-    $("#rcmp").innerHTML = `<b>Available routes</b><table><tr><th>Option</th><th>Distance</th><th>ETA</th></tr>${smartRouteFeatures.map((feature, index) => {
+    $("#rcmp").innerHTML = `<b>Available routes</b><table><tr><th>Option</th><th>Distance</th><th>ETA</th><th>Named-road tags</th></tr>${smartRouteFeatures.map((feature, index) => {
       const summary = srGetSummary(feature);
-      return `<tr data-route="${index}" style="cursor:pointer" class="${index === 0 ? "best sel" : ""}"><td>Route ${index + 1}${index === 0 ? " ★" : ""}</td><td>${srDistance(Number(summary.distance || 0))}</td><td>${srDuration(Number(summary.duration || 0))}</td></tr>`;
-    }).join("")}</table><p class="mu" style="font-size:11px">Select an option to preview it on the map. Alternative routes depend on availability from the routing server.</p>`;
+      const unnamedRatio = Number(feature.properties?.road_quality?.unnamed_distance_ratio || 0);
+      const namedCoverage = Math.max(0, Math.min(100, Math.round((1 - unnamedRatio) * 100)));
+      return `<tr data-route="${index}" style="cursor:pointer" class="${index === 0 ? "best sel" : ""}"><td>Route ${index + 1}${index === 0 ? " ★" : ""}</td><td>${srDistance(Number(summary.distance || 0))}</td><td>${srDuration(Number(summary.duration || 0))}</td><td>${namedCoverage}%</td></tr>`;
+    }).join("")}</table><p class="mu" style="font-size:11px">Select an option to preview it on the map. Named-road percentage means distance with a name/ref tag, not surface quality or public access. Up to three alternatives may be returned.</p>`;
 
     srRenderRoute(0, true);
     rmsg(`Route calculated successfully. ${srDistance(routeDistance)} · ${srDuration(routeDuration)}. Select another route option to compare.`);
