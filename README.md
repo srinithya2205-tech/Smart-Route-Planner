@@ -18,6 +18,29 @@ This update adds a JAIN Global Campus / Jakkasandra / Harohalli directory and mo
 - Route details show the proportion of named/reference-tagged versus unnamed route-step distance and flags unnamed segments.
 
 
+## India-wide map and routing
+
+The Route Planner opens at an India overview and provides quick views for 20 major Indian cities plus a selector for all 28 states and 8 union territories. The city and state controls only move the map; actual roads, map labels and place data are loaded from the underlying services.
+
+- **Map tiles:** OpenStreetMap and the alternate tile styles provide global map coverage. The base map is not limited to the Bengaluru directory.
+- **Place search:** Photon is a global geocoder. The map centre is sent as a relevance hint; it is not intended to restrict search to Bengaluru or to India.
+- **Road and place details:** OpenStreetMap data is queried for the current visible map area. Detailed place markers load at city/neighbourhood zoom; the optional road overlay loads mapped street and path geometries at closer zoom.
+- **Routing:** The FOSSGIS public OSRM service documents worldwide car, bicycle and foot profiles. Routes can still fail where mapped roads are disconnected, access-restricted or missing. Island, mountain, rural and border areas may have uneven routing coverage.
+- **Local directory:** Curated JAIN / Jakkasandra / Harohalli pins are regional demonstration data. They are now hidden by default and can be enabled separately; they do not define the map's geographic coverage.
+
+The public Photon, Overpass and FOSSGIS services are shared, best-effort services. Use viewport-based requests, respect their usage policies, and do not treat them as production SLAs. OpenStreetMap data is community maintained and can be incomplete or out of date. Keep all required attribution visible.
+
+## Automated checks
+
+The repository includes standard-library `unittest` tests for request validation, route normalisation and the alternative-ranking formulas. GitHub Actions runs these tests on pushes to `master` and `feature/**`, and on pull requests targeting `master`.
+
+Run them locally from the repository root:
+
+```powershell
+python -m pip install -r backend/requirements.txt
+python -m unittest discover -s backend/tests -v
+```
+
 ## Authentication and request flow
 
 ### Does this repository implement authentication?
