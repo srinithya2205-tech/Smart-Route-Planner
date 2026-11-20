@@ -510,22 +510,23 @@ body[data-theme="dark"] .boot-foot{color:#7f8b9b}
 <main>
 <section class="pg" id="home">
 <div class="hero hero-modern">
-  <span class="eyebrow">ROUTE PLANNING · GRAPH THEORY · OPEN MAP DATA</span>
-  <h1>Plan a route. Understand the network behind it.</h1>
-  <p>SMART ROUTE brings practical road routing together with an interactive graph-learning lab. Search places, compare routes, and explore the algorithms that make networks work.</p>
+  <span class="eyebrow">INDIA-WIDE MAPS · ROUTE ENGINEERING · GRAPH THEORY</span>
+  <h1>Explore India’s roads. Understand the algorithms behind every route.</h1>
+  <p>Search across Indian states and cities, inspect mapped neighbourhood roads, plan intercity journeys, compare alternatives, and learn the graph algorithms that power route planning. Built with OpenStreetMap, Leaflet, Python and FastAPI.</p>
   <div class="row">
     <button class="pri" onclick="goPage('real')">Open route planner</button>
     <button onclick="goPage('sim')">Explore Graph Lab</button>
     <button onclick="goPage('learn')">Start learning</button>
   </div>
-  <div class="home-proof"><span>Global place search</span><span>Driving · Walking · Cycling</span><span>Python FastAPI backend</span><span>Interactive graph algorithms</span></div>
+  <div class="home-proof"><span>28 states · 8 union territories</span><span>Worldwide place search</span><span>Driving · Walking · Cycling</span><span>Python FastAPI + OSRM</span></div>
 </div>
 <div class="grid g3 home-features">
   <div class="card"><span class="feature-icon">⌖</span><h3>Explore real places</h3><p class="mu">Search cities, streets, landmarks and mapped businesses using OpenStreetMap-based place search. Pan the map to explore a new area.</p><button class="text-button" onclick="goPage('real')">Open map →</button></div>
   <div class="card"><span class="feature-icon">↗</span><h3>See how routes work</h3><p class="mu">Request road routes through the Python backend and inspect distance, estimated duration, alternatives and step-by-step directions.</p><button class="text-button" onclick="goPage('real')">Plan a route →</button></div>
   <div class="card"><span class="feature-icon">⌘</span><h3>Learn by experimenting</h3><p class="mu">Build small graphs, change edge weights, run algorithms and then use curated visual explanations and course material to go deeper.</p><button class="text-button" onclick="goPage('learn')">Browse learning path →</button></div>
 </div>
-<div class="card project-note"><b>What this project is</b><p class="mu">A student-built route-planning and graph-theory learning project. Its map routes come from a public OpenStreetMap-based routing service; it is not a replacement for a commercial navigation service and does not currently provide live traffic conditions.</p></div>
+<div class="card project-note"><b>What this project is</b><p class="mu">An educational routing and graph-theory project with an India-first map experience. The map and route services use global OpenStreetMap-based data where roads are mapped and connected. Estimated times are not live-traffic predictions, and the public services are best-effort rather than production navigation infrastructure.</p></div>
+<div class="card project-note"><b>Engineering highlights</b><div class="grid g3"><div><h4>Map &amp; geospatial data</h4><p class="mu">Leaflet, OpenStreetMap tiles, Photon geocoding and viewport-based Overpass queries for visible roads and places.</p></div><div><h4>Backend &amp; routing</h4><p class="mu">Python FastAPI validates coordinates and travel profiles, calls FOSSGIS-hosted OSRM, and ranks returned alternatives.</p></div><div><h4>Algorithms &amp; learning</h4><p class="mu">Interactive Graph Lab demonstrations for Dijkstra, A*, BFS, DFS, Bellman-Ford, Prim and Kruskal.</p></div></div><p class="mu"><b>Portfolio note:</b> This project demonstrates frontend integration, API design, geospatial data handling, routing, algorithm visualisation and technical documentation. It is a learning project, not a live-traffic navigation product.</p></div>
 </section>
 
 <section class="pg" id="sim"><div class="ph"><span class="eyebrow">Graph lab</span><h2>Interactive Simulator</h2><p class="mu">Build a network, and the app recommends the best algorithm for it, then replays every step.</p></div>
