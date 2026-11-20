@@ -26,7 +26,7 @@ load_dotenv()
 app = FastAPI(
     title="Smart Route API",
     description="Place search and road routing for the Smart Route learning project.",
-    version="1.3.0",
+    version="1.4.0",
 )
 
 origin_string = os.getenv(
@@ -43,7 +43,7 @@ app.add_middleware(
     allow_headers=["Content-Type"],
 )
 
-USER_AGENT = "SmartRoute-StudentProject/1.3 (OpenStreetMap-based educational route planner)"
+USER_AGENT = "SmartRoute-StudentProject/1.4 (OpenStreetMap-based educational route planner)"
 HTTP_TIMEOUT = httpx.Timeout(35.0, connect=10.0)
 
 OSRM_SERVERS = {
@@ -447,4 +447,21 @@ async def calculate_route(request: RouteRequest) -> dict:
             "Routes are ranked using ETA and OpenStreetMap road-name coverage. "
             "Road names are not a reliable measurement of pavement quality or public access."
         ),
+        "routing_algorithm": {
+            "engine": "OSRM Route service",
+            "search_mode": (
+                "The hosted routing provider configures the search mode. OSRM supports "
+                "Contraction Hierarchies and Multi-Level Dijkstra; the public endpoint "
+                "does not expose its active mode."
+            ),
+            "alternative_ranking": {
+                "named_roads": "0.62 * duration_ratio + 0.38 * unnamed_distance_ratio",
+                "balanced": "0.80 * duration_ratio + 0.20 * unnamed_distance_ratio",
+                "fastest": "duration_ratio"
+            },
+            "graph_lab_note": (
+                "Graph Lab Dijkstra and A* are separate browser demonstrations; "
+                "they do not calculate live map routes."
+            )
+        },
     }
