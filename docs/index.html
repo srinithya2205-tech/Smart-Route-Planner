@@ -822,7 +822,8 @@ function catOf(t){const sh=t.shop,am=t.amenity,to=t.tourism,nm=t.name||'';
  if(/^(supermarket|convenience|grocery|greengrocer|general|kiosk|butcher|dairy|farm|deli|variety_store|department_store|mall|wholesale)$/.test(sh)||am=='marketplace')return'groc';
  if(/^(restaurant|cafe|fast_food|food_court|bar|pub|ice_cream)$/.test(am))return'food';
  if(sh)return'shop';
- if(am||t.leisure||t.natural||t.railway||t.highway==='bus_stop'||t.public_transport)return'svc';
+ if(/^(attraction|museum|viewpoint|information|gallery|zoo|theme_park)$/.test(to))return'svc';
+ if(am||t.leisure||t.natural||t.railway||t.highway==='bus_stop'||t.public_transport||t.aeroway)return'svc';
  return null}
 // Base maps. OpenStreetMap is the default; use only viewport tiles (no bulk downloading).
 // The standard OSM tile server is a best-effort community service, so we provide fallbacks.
