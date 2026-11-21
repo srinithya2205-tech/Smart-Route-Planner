@@ -153,7 +153,7 @@ label.f{min-width:0}.rg select,.trow select{min-width:0;max-width:100%}
 .leaflet-tooltip.pn,.leaflet-tooltip.se{background:#071a1af0;color:#fff;border:1px solid var(--bd);font-size:11px;font-weight:600;padding:1px 6px;box-shadow:none}
 .leaflet-tooltip.se{border-color:var(--cy);color:var(--cy)}
 .leaflet-tooltip-top.se:before,.leaflet-tooltip-right.pn:before{display:none}
-#rmap:not(.zl) .leaflet-tooltip.pn{display:none}
+#rmap:not(.zl) .leaflet-tooltip.pn{display:block!important;background:rgba(255,255,255,.96);border:1px solid #cbd5e1;border-radius:6px;color:#172033;font-size:11px;font-weight:700;padding:3px 6px;box-shadow:0 1px 4px rgba(15,23,42,.18);white-space:nowrap;pointer-events:none}.pn:before{display:none}
 #rrs{margin:6px 0 4px}
 @media(max-width:640px){
  body{font-size:14.5px}main{padding:16px 12px 56px}
@@ -925,9 +925,10 @@ async function loadStreetOverlay(){
 // ---- shops, medical stores and PGs in the current view ----
 function addPoi(j){const els=j.elements.filter(e=>e.tags).sort((a,b)=>!!b.tags.name-!!a.tags.name);if(nPoi+els.length>3500){rPoiL.clearLayers();seen.clear();nPoi=0}let n=0;
  for(const e of els){const k=e.type+e.id;if(seen.has(k))continue;const t=e.tags,la=e.lat!=null?e.lat:e.center&&e.center.lat,lo=e.lon!=null?e.lon:e.center&&e.center.lon;if(la==null||lo==null)continue;const c=catOf(t);if(!c)continue;seen.add(k);
-  const nm=t.name||t['name:en']||'',[em,cn,col]=CATS[c],kind=(t.shop||t.amenity||t.tourism||t.healthcare||t.building||t.leisure||t.natural||t.railway||t.highway||t.public_transport||'').replace(/_/g,' '),addr=[t['addr:housenumber'],t['addr:street'],t['addr:suburb']||t['addr:city']].filter(Boolean).join(', '),ph=t.phone||t['contact:phone'];
-  const m=L.marker([la,lo],{icon:L.divIcon({className:'poi',html:`<span style="--c:${col}">${em}</span>`,iconSize:[26,26],iconAnchor:[13,13]}),title:nm||cn}).bindPopup(pop(nm||kind||cn,esc(cn)+(kind?' · '+esc(kind):'')+(addr?'<br>'+esc(addr):'')+(ph?'<br>📞 '+esc(ph):'')+(t.opening_hours?'<br>🕒 '+esc(t.opening_hours):''),la,lo),{maxWidth:240});m._smartCategory=c;osmPoiMarkers.push(m);if(poiFilterState[c]!==false)m.addTo(rPoiL);
-  if(nm)m.bindTooltip(esc(nm),{permanent:true,direction:'right',offset:[12,0],className:'pn'});nPoi++;n++}
+  const nm=t.name||t['name:en']||'',[em,cn,col]=CATS[c],kind=(t.shop||t.amenity||t.tourism||t.healthcare||t.building||t.leisure||t.natural||t.railway||t.highway||t.public_transport||t.aeroway||'').replace(/_/g,' '),locality=t['addr:suburb']||t['addr:neighbourhood']||t['addr:city_district']||t['addr:city']||t['addr:district']||t['addr:state']||t['is_in:city']||t['is_in:state']||'',addr=[t['addr:housenumber'],t['addr:street'],locality].filter(Boolean).join(', '),placeLabel=nm+(locality?' · '+locality:''),ph=t.phone||t['contact:phone'];
+  const coordinates=Number(la).toFixed(5)+', '+Number(lo).toFixed(5),details=esc(cn)+(kind?' · '+esc(kind):'')+(addr?'<br>'+esc(addr):'')+'<br><small>Location: '+coordinates+'</small>'+(ph?'<br>📞 '+esc(ph):'')+(t.opening_hours?'<br>🕒 '+esc(t.opening_hours):'');
+  const m=L.marker([la,lo],{icon:L.divIcon({className:'poi',html:`<span style="--c:${col}">${em}</span>`,iconSize:[26,26],iconAnchor:[13,13]}),title:placeLabel||cn}).bindPopup(pop(nm||kind||cn,details,la,lo),{maxWidth:260});m._smartCategory=c;osmPoiMarkers.push(m);if(poiFilterState[c]!==false)m.addTo(rPoiL);
+  if(nm)m.bindTooltip(esc(placeLabel),{permanent:true,direction:'right',offset:[12,0],className:'pn'});nPoi++;n++}
  return n}
 function applyOsmPoiFilters(){osmPoiMarkers.forEach(m=>{const visible=poiFilterState[m._smartCategory]!==false;if(visible&&!rPoiL.hasLayer(m))m.addTo(rPoiL);if(!visible&&rPoiL.hasLayer(m))rPoiL.removeLayer(m)})}
 async function loadPoi(){if(!RM||RM.getZoom()<14)return;const tok=++rTok,quiet=rS||rD||sRes.length,b=RM.getBounds(),A=`(${[b.getSouth(),b.getWest(),b.getNorth(),b.getEast()].map(x=>x.toFixed(5)).join(',')})`;
