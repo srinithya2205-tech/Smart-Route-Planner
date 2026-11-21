@@ -490,6 +490,10 @@ body[data-theme="dark"] .boot-foot{color:#7f8b9b}
 .leaflet-tooltip.gmap-place-name{display:block!important;visibility:visible!important;background:rgba(255,255,255,.97);border:1px solid #cbd5e1;border-radius:5px;color:#172033;font-size:11px;font-weight:700;line-height:1.25;padding:3px 6px;box-shadow:0 1px 4px rgba(15,23,42,.2);white-space:nowrap;pointer-events:none;}
 .leaflet-tooltip.gmap-place-name:before{display:none!important}
 .leaflet-tooltip.gmap-place-name strong{font-weight:700}
+#rmap .leaflet-tooltip.gmap-place-name{display:block!important;visibility:visible!important;opacity:1!important;background:#fff;border:1px solid #cbd5e1;border-radius:5px;color:#1e293b;font-size:11px;font-weight:700;line-height:1.25;padding:3px 6px;box-shadow:0 1px 4px rgba(15,23,42,.24);white-space:nowrap;pointer-events:none;}
+#rmap .leaflet-tooltip.gmap-place-name:before{display:none!important}
+#rmap .gmap-place-dot{display:block;width:11px;height:11px;border-radius:50%;background:var(--pin-color,#2563eb);border:2px solid #fff;box-shadow:0 1px 4px rgba(15,23,42,.6)}
+#rmap .gmap-place-marker{background:transparent!important;border:0!important}
 </style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css"></head><body data-theme="light">
 <div id="bootScreen" class="boot-screen" role="status" aria-live="polite" aria-label="Loading Smart Route">
@@ -811,7 +815,7 @@ $('#scn').onchange=()=>{scn=$('#scn').value;try{localStorage.setItem('sr_scn',sc
 $('#swp').onclick=()=>{const had=!!R,s=$('#src').value;$('#src').value=$('#dst').value;$('#dst').value=s;clr();draw();if(had)go()};
 addEventListener('keydown',e=>{if(!$('#sim').classList.contains('on')||/INPUT|SELECT|TEXTAREA/.test(e.target.tagName))return;if(e.key=='ArrowRight')stepTo(cur+1);else if(e.key=='ArrowLeft')stepTo(cur-1);else if(e.key==' '){e.preventDefault();$('#pl').click()}});
 // ---- global route planner and OpenStreetMap place data ----
-let RM,rRt,rMk,rPoiL,rSel,rRoad,rS=null,rD=null,radj,rpos,rTok=0,rGo=0,rPT=null,rRoadTimer=null,rRoadToken=0,nPoi=0,sTok=0,sRes=[],osmPoiMarkers=[];const seen=new Set(),poiFilterState={area:true,food:true,groc:true,shop:true,med:true,stay:true,svc:true};
+let RM,rRt,rMk,rPoiL,rSel,rRoad,rS=null,rD=null,radj,rpos,rTok=0,rGo=0,rPT=null,rRoadTimer=null,rRoadToken=0,rSearchTimer=null,nPoi=0,sTok=0,sRes=[],osmPoiMarkers=[];const seen=new Set(),poiFilterState={area:true,food:true,groc:true,shop:true,med:true,stay:true,svc:true};
 const BLR=[12.6505,77.4455];
 const mh=(a,b)=>{const r=Math.PI/180,dl=(b[0]-a[0])*r,dn=(b[1]-a[1])*r,k=Math.sin(dl/2)**2+Math.cos(a[0]*r)*Math.cos(b[0]*r)*Math.sin(dn/2)**2;return 12742000*Math.asin(Math.sqrt(k))};
 const rmsg=(t,e)=>{$('#rmsg').textContent=t;$('#rmsg').classList.toggle('status-error',!!e)};
@@ -897,12 +901,18 @@ function rinit(){if(RM){setTimeout(()=>RM.invalidateSize(),60);return}
  if(!window.L){rmsg('The map library could not load. Open this page with internet access.',1);return}
  RM=L.map('rmap',{minZoom:2,maxZoom:19,zoomSnap:.5,zoomDelta:.5,wheelPxPerZoomLevel:100,preferCanvas:true}).setView([22.8,82.3],5.1);$('#rsty').value='1';useTiles(1,true);
  $('#retryTiles').onclick=()=>useTiles(+$('#rsty').value||1,true);
- rRoad=L.layerGroup().addTo(RM);rPoiL=L.layerGroup().addTo(RM);rRt=L.layerGroup().addTo(RM);rSel=L.layerGroup().addTo(RM);rMk=L.layerGroup().addTo(RM);cpInit();document.querySelectorAll('[data-poi-filter]').forEach(input=>input.onchange=()=>{poiFilterState[input.dataset.poiFilter]=input.checked;applyOsmPoiFilters()});$('#showBengaluruDirectory').onchange=()=>{if($('#showBengaluruDirectory').checked)rCur.addTo(RM);else if(RM.hasLayer(rCur))RM.removeLayer(rCur)};const refreshRoadOverlay=()=>{rRoadToken++;if($('#rroads').checked){loadStreetOverlay()}else rRoad.clearLayers()};$('#rroads').onchange=refreshRoadOverlay;document.querySelectorAll('.road-filter').forEach(input=>input.onchange=refreshRoadOverlay);
+ rRoad=L.layerGroup().addTo(RM);rPoiL=L.layerGroup().addTo(RM);rRt=L.layerGroup().addTo(RM);rSel=L.layerGroup().addTo(RM);rMk=L.layerGroup().addTo(RM);cpInit();
+ const indiaCityPins=L.layerGroup().addTo(RM);
+ Object.values(QUICK_CITIES).forEach(city=>{
+  const icon=L.divIcon({className:'gmap-place-marker',html:'<span class="gmap-place-dot" style="--pin-color:#2563eb"></span>',iconSize:[12,12],iconAnchor:[6,6]});
+  const marker=L.marker(city.center,{icon:icon,title:city.name}).bindPopup(pop(city.name,'Major Indian city<br><small>Location: '+city.center[0].toFixed(5)+', '+city.center[1].toFixed(5)+'</small>',city.center[0],city.center[1]));
+  marker.bindTooltip(esc(city.name),{permanent:true,direction:'right',offset:[9,0],className:'gmap-place-name'}).addTo(indiaCityPins);
+ });document.querySelectorAll('[data-poi-filter]').forEach(input=>input.onchange=()=>{poiFilterState[input.dataset.poiFilter]=input.checked;applyOsmPoiFilters()});$('#showBengaluruDirectory').onchange=()=>{if($('#showBengaluruDirectory').checked)rCur.addTo(RM);else if(RM.hasLayer(rCur))RM.removeLayer(rCur)};const refreshRoadOverlay=()=>{rRoadToken++;if($('#rroads').checked){loadStreetOverlay()}else rRoad.clearLayers()};$('#rroads').onchange=refreshRoadOverlay;document.querySelectorAll('.road-filter').forEach(input=>input.onchange=refreshRoadOverlay);
  RM.on('click',e=>rpickAt(e.latlng.lat,e.latlng.lng));
  RM.on('popupopen',e=>e.popup.getElement().querySelectorAll('[data-use]').forEach(b=>b.onclick=()=>{RM.closePopup();rpickAt(+b.dataset.la,+b.dataset.lo,b.dataset.nm,b.dataset.use)}));
  const zc=()=>{const c=RM.getContainer(),z=RM.getZoom();c.classList.toggle('zl',z>=17);[13,14,15,16].forEach(k=>c.classList.toggle('z'+k,z>=k))};RM.on('zoomend',zc);zc();
- RM.on('moveend',()=>{clearTimeout(rPT);clearTimeout(rRoadTimer);if(RM.getZoom()>=14&&$('#rroads').checked)rRoadTimer=setTimeout(loadStreetOverlay,1000);if(RM.getZoom()<9){poiStatus('Zoom to a state or region to see named cities, towns and villages');return}rPT=setTimeout(loadPoi,1100)});
- setTimeout(()=>{RM.invalidateSize();if(RM.getZoom()>=9)loadPoi()},80)}
+ RM.on('moveend',()=>{clearTimeout(rPT);clearTimeout(rRoadTimer);if(RM.getZoom()>=14&&$('#rroads').checked)rRoadTimer=setTimeout(loadStreetOverlay,1000);if(RM.getZoom()<7){poiStatus('Zoom to a state or region to see named cities, towns and villages');return}rPT=setTimeout(loadPoi,1100)});
+ setTimeout(()=>{RM.invalidateSize();if(RM.getZoom()>=7)loadPoi()},80)}
 // ---- data (Overpass servers, with backups) ----
 const OVP=['https://overpass-api.de/api/interpreter','https://overpass.kumi.systems/api/interpreter','https://overpass.private.coffee/api/interpreter'];
 async function ovp(q,ms){let le;for(const u of OVP){try{const r=await fetch(u,{method:'POST',body:'data='+encodeURIComponent(q),signal:AbortSignal.timeout?AbortSignal.timeout(ms||60000):undefined});if(!r.ok)throw new Error('HTTP '+r.status);return await r.json()}catch(e){le=e}}throw le}
@@ -938,11 +948,12 @@ function addPoi(j){const els=(j.elements||[]).filter(e=>e.tags).sort((a,b)=>!!b.
   if(nm)m.bindTooltip(esc(placeLabel),{permanent:true,direction:'right',offset:[9,0],className:'gmap-place-name'});nPoi++;n++}
  return n}
 function applyOsmPoiFilters(){osmPoiMarkers.forEach(m=>{const visible=poiFilterState[m._smartCategory]!==false;if(visible&&!rPoiL.hasLayer(m))m.addTo(rPoiL);if(!visible&&rPoiL.hasLayer(m))rPoiL.removeLayer(m)})}
-async function loadPoi(){if(!RM||RM.getZoom()<9)return;const tok=++rTok,quiet=rS||rD||sRes.length,b=RM.getBounds(),A=`(${[b.getSouth(),b.getWest(),b.getNorth(),b.getEast()].map(x=>x.toFixed(4)).join(',')})`,zoom=RM.getZoom();
+async function loadPoi(){if(!RM||RM.getZoom()<7)return;const tok=++rTok,quiet=rS||rD||sRes.length,b=RM.getBounds(),A=`(${[b.getSouth(),b.getWest(),b.getNorth(),b.getEast()].map(x=>x.toFixed(4)).join(',')})`,zoom=RM.getZoom();
  rPoiL.clearLayers();seen.clear();nPoi=0;if(!quiet)rmsg('Loading mapped places for this area from OpenStreetMap…');
  const settlements=`nwr${A}[place~"^(city|town|village|suburb|neighbourhood|hamlet|locality|isolated_dwelling)$"];`;
  const businesses=zoom>=13?`nwr${A}[shop];nwr${A}[amenity~"^(pharmacy|clinic|hospital|doctors|dentist|veterinary|restaurant|cafe|fast_food|food_court|bar|pub|ice_cream|marketplace|hostel|school|kindergarten|college|university|bank|atm|fuel|place_of_worship|bus_station|post_office|police|fire_station|library|cinema|coworking_space|community_centre|charging_station)$"];nwr${A}[healthcare];nwr${A}[tourism~"^(hostel|guest_house|hotel|apartment|motel|attraction|museum|viewpoint|information)$"];nwr${A}[building=dormitory];nwr${A}[leisure~"^(park|garden|playground|sports_centre|stadium|pitch|nature_reserve)$"];nwr${A}[natural~"^(water|wood|scrub)$"];nwr${A}[railway~"^(station|halt|tram_stop)$"];nwr${A}[highway=bus_stop];nwr${A}[public_transport~"^(station|platform)$"];nwr${A}[aeroway~"^(aerodrome|terminal)$"];nwr${A}[name~"(^| )PG( |$)|paying guest|hostel",i];`:``;
- const q=`[out:json][timeout:35];(${settlements}${businesses});out center tags 1800;`;
+ const settlementCap=zoom<8?250:zoom<10?550:1000;
+ const q=`[out:json][timeout:30];(${settlements}${businesses});out center tags ${settlementCap};`;
  try{const j=await ovp(q,50000),n=addPoi(j);if(tok==rTok){poiStatus(`${nPoi.toLocaleString()} mapped places currently loaded in this view`);if(!quiet)rmsg(`${nPoi.toLocaleString()} mapped places loaded. Coverage depends on OpenStreetMap edits in this area.`)}}
  catch(e){if(tok==rTok){poiStatus('OpenStreetMap place markers are temporarily unavailable; place search and base map can still work.',true);if(!quiet)rmsg('The base map is available, but the extra place-marker service did not respond. Try again after moving the map or use place search.',1)}}}
 // ---- global place search (via the Python backend and Photon) ----
@@ -968,25 +979,60 @@ function addRes(list,tok,q){
 function showRes(){
  $('#rres').innerHTML=sRes.slice(0,12).map((x,i)=>`<button class="rr" data-i="${i}"><b>${x.em||'📍'} ${esc(x.nm)}</b><small>${esc(x.sub||'OpenStreetMap place result')}</small></button>`).join('');
 }
+function addSearchPin(x,selected){
+ if(!x||!Number.isFinite(Number(x.la))||!Number.isFinite(Number(x.lo)))return null;
+ const lat=Number(x.la),lon=Number(x.lo),label=String(x.nm||'Mapped place');
+ const icon=L.divIcon({className:'gmap-place-marker',html:'<span class="gmap-place-dot" style="--pin-color:'+(selected?'#dc2626':'#2563eb')+'"></span>',iconSize:[12,12],iconAnchor:[6,6]});
+ const sub=String(x.sub||'OpenStreetMap place result');
+ const details=esc(sub)+'<br><small>Location: '+lat.toFixed(5)+', '+lon.toFixed(5)+'</small>';
+ const marker=L.marker([lat,lon],{icon:icon,title:label}).bindPopup(pop(label,details,lat,lon),{maxWidth:280}).addTo(rSel);
+ marker.bindTooltip(esc(label),{permanent:true,direction:'right',offset:[9,0],className:'gmap-place-name'});
+ return marker;
+}
 function pickResult(i){
- const x=sRes[i];if(!x)return;
- $('#rres').innerHTML='';rSel.clearLayers();RM.flyTo([x.la,x.lo],x.z||17,{duration:.8});
- const m=L.marker([x.la,x.lo],{icon:L.divIcon({className:'sel',html:'<span>📍</span>',iconSize:[30,30],iconAnchor:[15,30]})})
-   .bindPopup(pop(x.nm,esc(x.sub||'OpenStreetMap place result'),x.la,x.lo),{maxWidth:260}).addTo(rSel);
- setTimeout(()=>m.openPopup(),850);
- rmsg(`Showing ${x.nm}. Choose “Set as start” or “Set as destination” from the pin.`);
+ const x=sRes[i];if(!x||!RM)return;
+ $('#rres').innerHTML='';rSel.clearLayers();
+ const marker=addSearchPin(x,true);
+ RM.flyTo([Number(x.la),Number(x.lo)],Math.max(15,x.z||17),{duration:.8});
+ if(marker)setTimeout(()=>marker.openPopup(),850);
+ rmsg('Showing '+x.nm+'. The pin marks its mapped coordinates; choose Set as start or Set as destination.');
 }
 $('#rres').onclick=e=>{const b=e.target.closest('.rr');if(b)pickResult(+b.dataset.i)};
 $('#rq').oninput=()=>{
  const q=$('#rq').value.trim();
- if(q.length<2)return;
- const tok=++sTok;sRes=[];addRes(lsearch(q),tok,q);
+ const tok=++sTok;
+ clearTimeout(rSearchTimer);
+ sRes=[];rSel.clearLayers();
+ if(q.length<2){$('#rres').innerHTML='';return}
+ if(!RM)rinit();
+ addRes(lsearch(q),tok,q);
+ rSearchTimer=setTimeout(async()=>{
+  if(tok!==sTok||!RM)return;
+  try{
+   const center=RM.getCenter();
+   const params=new URLSearchParams({q:q,limit:'10',lat:String(center.lat),lon:String(center.lng)});
+   const response=await fetch(`${SMARTROUTE_API_BASE}/api/search?${params.toString()}`);
+   const data=await response.json();
+   if(tok!==sTok)return;
+   if(!response.ok)throw new Error(data.detail||'Place search is temporarily unavailable');
+   const mapped=(data.results||[]).map(x=>({nm:x.name,sub:x.label||x.country||'OpenStreetMap place',la:x.lat,lo:x.lon,em:'📍',z:x.zoom||16}));
+   addRes(mapped,tok,q);
+   rSel.clearLayers();
+   sRes.slice(0,10).forEach(x=>addSearchPin(x,false));
+   if(sRes.length)rmsg(sRes.length+' matching places. Select a result to zoom to its exact pin.');
+   else rmsg('No mapped place found. Try adding the city or state to your search.',1);
+  }catch(error){
+   if(tok!==sTok)return;
+   if(sRes.length){sRes.slice(0,10).forEach(x=>addSearchPin(x,false));rmsg('Showing local matches; live nationwide search is temporarily unavailable.',1)}
+   else rmsg('Place search is unavailable right now. Check the backend connection and try again.',1);
+  }
+ },350);
 };
 $('#rsb').onclick=async()=>{
  rinit();if(!RM)return;
  const q=$('#rq').value.trim();
  if(!q)return rmsg('Type a city, street, landmark or business name first.',1);
- const tok=++sTok;sRes=[];$('#rres').innerHTML='';rSel.clearLayers();
+ const tok=++sTok;clearTimeout(rSearchTimer);sRes=[];$('#rres').innerHTML='';rSel.clearLayers();
  addRes(lsearch(q),tok,q);
  rmsg(`Searching OpenStreetMap places for “${q}”…`);
  try{
