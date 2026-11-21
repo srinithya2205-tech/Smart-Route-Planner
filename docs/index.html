@@ -915,7 +915,7 @@ function rinit(){if(RM){setTimeout(()=>RM.invalidateSize(),60);return}
  RM.on('click',e=>rpickAt(e.latlng.lat,e.latlng.lng));
  RM.on('popupopen',e=>e.popup.getElement().querySelectorAll('[data-use]').forEach(b=>b.onclick=()=>{RM.closePopup();rpickAt(+b.dataset.la,+b.dataset.lo,b.dataset.nm,b.dataset.use)}));
  const zc=()=>{const c=RM.getContainer(),z=RM.getZoom();c.classList.toggle('zl',z>=17);[13,14,15,16].forEach(k=>c.classList.toggle('z'+k,z>=k))};RM.on('zoomend',zc);zc();
- RM.on('moveend',()=>{clearTimeout(rPT);clearTimeout(rRoadTimer);if(RM.getZoom()>=14&&$('#rroads').checked)rRoadTimer=setTimeout(loadStreetOverlay,1000);if(RM.getZoom()<7){poiStatus('Zoom to a state or region to see named cities, towns and villages');return}rPT=setTimeout(loadPoi,1100)});
+ RM.on('moveend',()=>{clearTimeout(rPT);clearTimeout(rRoadTimer);setTimeout(declutterOsmLabels,80);if(RM.getZoom()>=14&&$('#rroads').checked)rRoadTimer=setTimeout(loadStreetOverlay,1000);if(RM.getZoom()<7){poiStatus('Zoom to a state or region to see named cities, towns and villages');return}rPT=setTimeout(loadPoi,1100)});
  setTimeout(()=>{RM.invalidateSize();if(RM.getZoom()>=7)loadPoi()},80)}
 // ---- data (Overpass servers, with backups) ----
 const OVP=['https://overpass-api.de/api/interpreter','https://overpass.kumi.systems/api/interpreter','https://overpass.private.coffee/api/interpreter'];
@@ -943,22 +943,47 @@ async function loadStreetOverlay(){
  }catch(e){if(token===rRoadToken&&rRoad){rRoad.clearLayers();rmsg('The optional road-line overlay is unavailable right now. The normal map tiles and route planner are separate and can still work.',1)}}
 }
 // ---- shops, medical stores and PGs in the current view ----
-function addPoi(j){const els=(j.elements||[]).filter(e=>e.tags).sort((a,b)=>!!b.tags.name-!!a.tags.name);if(nPoi+els.length>3500){rPoiL.clearLayers();seen.clear();nPoi=0}let n=0;
+function addPoi(j,zoom){const placeOrder={city:0,town:1,village:2,suburb:3,neighbourhood:4,hamlet:5,locality:6,isolated_dwelling:7};const els=(j.elements||[]).filter(e=>e.tags).sort((a,b)=>{const pa=placeOrder[a.tags.place]??10,pb=placeOrder[b.tags.place]??10;return pa-pb||Number(!!b.tags.name)-Number(!!a.tags.name)});if(nPoi+els.length>3500){rPoiL.clearLayers();osmPoiMarkers=[];seen.clear();nPoi=0}let n=0;
  for(const e of els){const k=e.type+e.id;if(seen.has(k))continue;const t=e.tags,la=e.lat!=null?e.lat:e.center&&e.center.lat,lo=e.lon!=null?e.lon:e.center&&e.center.lon;if(la==null||lo==null)continue;const c=catOf(t);if(!c)continue;seen.add(k);
-  const nm=t.name||t['name:en']||t['name:kn']||t['name:hi']||'',[em,cn,col]=CATS[c],kind=(t.place||t.shop||t.amenity||t.tourism||t.healthcare||t.building||t.leisure||t.natural||t.railway||t.highway||t.public_transport||t.aeroway||'').replace(/_/g,' '),locality=t['addr:suburb']||t['addr:neighbourhood']||t['addr:city_district']||t['addr:city']||t['addr:district']||t['addr:state']||t['is_in:city']||t['is_in:state']||'',addr=[t['addr:housenumber'],t['addr:street'],locality].filter(Boolean).join(', '),placeLabel=nm+(locality?' · '+locality:''),ph=t.phone||t['contact:phone'];
+  const nm=t.name||t['name:en']||t['name:kn']||t['name:hi']||'',placeType=t.place||'',[em,cn,col]=CATS[c],kind=(t.place||t.shop||t.amenity||t.tourism||t.healthcare||t.building||t.leisure||t.natural||t.railway||t.highway||t.public_transport||t.aeroway||'').replace(/_/g,' '),locality=t['addr:suburb']||t['addr:neighbourhood']||t['addr:city_district']||t['addr:city']||t['addr:district']||t['addr:state']||t['is_in:city']||t['is_in:state']||'',addr=[t['addr:housenumber'],t['addr:street'],locality].filter(Boolean).join(', '),placeLabel=nm+(locality?' · '+locality:''),ph=t.phone||t['contact:phone'];
+  if(!nm)continue;
+  const placeKey=nm.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]/g,'');
+  const duplicateRadius=zoom<8?18000:zoom<10?9000:zoom<12?3500:zoom<14?1200:450;
+  if(placeKey&&osmPoiMarkers.some(existing=>existing._smartPlaceKey===placeKey&&mh([existing._smartLat,existing._smartLon],[la,lo])<duplicateRadius))continue;
+  if(placeKey&&Object.values(QUICK_CITIES).some(city=>city.name.toLowerCase().replace(/[^a-z0-9]/g,'')===placeKey&&mh(city.center,[la,lo])<30000))continue;
   const coordinates=Number(la).toFixed(5)+', '+Number(lo).toFixed(5),details=esc(cn)+(kind?' · '+esc(kind):'')+(addr?'<br>'+esc(addr):'')+'<br><small>Location: '+coordinates+'</small>'+(ph?'<br>📞 '+esc(ph):'')+(t.opening_hours?'<br>🕒 '+esc(t.opening_hours):'');
   const markerIcon=L.divIcon({className:'gmap-place-marker',html:`<span class="gmap-place-dot" style="--pin-color:${col}"></span>`,iconSize:[12,12],iconAnchor:[6,6]});
-  const m=L.marker([la,lo],{icon:markerIcon,title:placeLabel||cn}).bindPopup(pop(nm||kind||cn,details,la,lo),{maxWidth:260});m._smartCategory=c;osmPoiMarkers.push(m);if(poiFilterState[c]!==false)m.addTo(rPoiL);
+  const m=L.marker([la,lo],{icon:markerIcon,title:placeLabel||cn}).bindPopup(pop(nm||kind||cn,details,la,lo),{maxWidth:260});m._smartCategory=c;m._smartPlaceKey=placeKey;m._smartLat=la;m._smartLon=lo;m._smartPlaceType=placeType;m._smartPlaceName=placeLabel;osmPoiMarkers.push(m);if(poiFilterState[c]!==false)m.addTo(rPoiL);
   if(nm)m.bindTooltip(esc(placeLabel),{permanent:true,direction:'right',offset:[9,0],className:'gmap-place-name'});nPoi++;n++}
  return n}
-function applyOsmPoiFilters(){osmPoiMarkers.forEach(m=>{const visible=poiFilterState[m._smartCategory]!==false;if(visible&&!rPoiL.hasLayer(m))m.addTo(rPoiL);if(!visible&&rPoiL.hasLayer(m))rPoiL.removeLayer(m)})}
+function declutterOsmLabels(){
+ if(!RM||!rPoiL)return;
+ const zoom=RM.getZoom(),occupied=[];
+ const rank={city:0,town:1,village:2,suburb:3,neighbourhood:4,hamlet:5,locality:6,isolated_dwelling:7};
+ const candidates=osmPoiMarkers.filter(m=>rPoiL.hasLayer(m)&&m.getTooltip()&&m.getTooltip()._container);
+ candidates.sort((a,b)=>(rank[a._smartPlaceType]??8)-(rank[b._smartPlaceType]??8));
+ candidates.forEach(marker=>{
+  const tip=marker.getTooltip()._container;if(!tip)return;
+  const point=RM.latLngToContainerPoint(marker.getLatLng());
+  const width=Math.min(210,Math.max(42,(marker._smartPlaceName||'').length*6.5+18));
+  const rect={left:point.x+8,top:point.y-12,right:point.x+8+width,bottom:point.y+12};
+  const overlaps=occupied.some(r=>rect.left<r.right+5&&rect.right>r.left-5&&rect.top<r.bottom+4&&rect.bottom>r.top-4);
+  const type=marker._smartPlaceType||'';
+  const zoomAllows=zoom<8?type==='city':zoom<10?/^(city|town)$/.test(type):zoom<12?!/^(neighbourhood|locality|isolated_dwelling)$/.test(type):true;
+  const visible=zoomAllows&&!overlaps;
+  tip.style.display=visible?'block':'none';
+  if(visible)occupied.push(rect);
+ });
+}
+function applyOsmPoiFilters(){osmPoiMarkers.forEach(m=>{const visible=poiFilterState[m._smartCategory]!==false;if(visible&&!rPoiL.hasLayer(m))m.addTo(rPoiL);if(!visible&&rPoiL.hasLayer(m))rPoiL.removeLayer(m)});setTimeout(declutterOsmLabels,80)}
 async function loadPoi(){if(!RM||RM.getZoom()<7)return;const tok=++rTok,quiet=rS||rD||sRes.length,b=RM.getBounds(),A=`(${[b.getSouth(),b.getWest(),b.getNorth(),b.getEast()].map(x=>x.toFixed(4)).join(',')})`,zoom=RM.getZoom();
  rPoiL.clearLayers();osmPoiMarkers=[];seen.clear();nPoi=0;if(!quiet)rmsg('Loading mapped places for this area from OpenStreetMap…');
- const settlements=`nwr${A}[place~"^(city|town|village|suburb|neighbourhood|hamlet|locality|isolated_dwelling)$"];`;
+ const settlementTypes=zoom<8?'city':zoom<10?'city|town':zoom<12?'city|town|village':zoom<14?'city|town|village|suburb|hamlet':'city|town|village|suburb|neighbourhood|hamlet|locality|isolated_dwelling';
+ const settlements=`nwr${A}[place~"^(${settlementTypes})$"];`;
  const businesses=zoom>=13?`nwr${A}[shop];nwr${A}[amenity~"^(pharmacy|clinic|hospital|doctors|dentist|veterinary|restaurant|cafe|fast_food|food_court|bar|pub|ice_cream|marketplace|hostel|school|kindergarten|college|university|bank|atm|fuel|place_of_worship|bus_station|post_office|police|fire_station|library|cinema|coworking_space|community_centre|charging_station)$"];nwr${A}[healthcare];nwr${A}[tourism~"^(hostel|guest_house|hotel|apartment|motel|attraction|museum|viewpoint|information)$"];nwr${A}[building=dormitory];nwr${A}[leisure~"^(park|garden|playground|sports_centre|stadium|pitch|nature_reserve)$"];nwr${A}[natural~"^(water|wood|scrub)$"];nwr${A}[railway~"^(station|halt|tram_stop)$"];nwr${A}[highway=bus_stop];nwr${A}[public_transport~"^(station|platform)$"];nwr${A}[aeroway~"^(aerodrome|terminal)$"];nwr${A}[name~"(^| )PG( |$)|paying guest|hostel",i];`:``;
- const settlementCap=zoom<8?250:zoom<10?550:1000;
+ const settlementCap=zoom<8?100:zoom<10?220:zoom<12?450:zoom<14?700:1000;
  const q=`[out:json][timeout:30];(${settlements}${businesses});out center tags ${settlementCap};`;
- try{const j=await ovp(q,50000);if(tok!==rTok)return;const n=addPoi(j);if(tok==rTok){poiStatus(`${nPoi.toLocaleString()} mapped places currently loaded in this view`);if(!quiet)rmsg(`${nPoi.toLocaleString()} mapped places loaded. Coverage depends on OpenStreetMap edits in this area.`)}}
+ try{const j=await ovp(q,50000);if(tok!==rTok)return;const n=addPoi(j,zoom);if(tok==rTok){poiStatus(`${nPoi.toLocaleString()} named places currently loaded in this view`);setTimeout(declutterOsmLabels,80);if(!quiet)rmsg(`${nPoi.toLocaleString()} named places loaded. Zoom closer for towns, neighbourhoods and businesses.`)}}
  catch(e){if(tok==rTok){poiStatus('OpenStreetMap place markers are temporarily unavailable; place search and base map can still work.',true);if(!quiet)rmsg('The base map is available, but the extra place-marker service did not respond. Try again after moving the map or use place search.',1)}}}
 // ---- global place search (via the Python backend and Photon) ----
 function lsearch(q){
