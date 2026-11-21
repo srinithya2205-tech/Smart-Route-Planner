@@ -494,6 +494,10 @@ body[data-theme="dark"] .boot-foot{color:#7f8b9b}
 #rmap .leaflet-tooltip.gmap-place-name:before{display:none!important}
 #rmap .gmap-place-dot{display:block;width:11px;height:11px;border-radius:50%;background:var(--pin-color,#2563eb);border:2px solid #fff;box-shadow:0 1px 4px rgba(15,23,42,.6)}
 #rmap .gmap-place-marker{background:transparent!important;border:0!important}
+.rres{display:flex;flex-wrap:wrap;gap:7px;max-height:240px;overflow:auto;margin-top:8px}
+.rres .rr{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;min-width:180px;max-width:100%;padding:8px 11px;border:1px solid var(--bd);border-radius:10px;background:var(--card)}
+.rres .rr b{font-size:12px;color:var(--tx)}
+.rres .rr small{font-size:11px;color:var(--mu)}
 </style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css"></head><body data-theme="light">
 <div id="bootScreen" class="boot-screen" role="status" aria-live="polite" aria-label="Loading Smart Route">
@@ -949,12 +953,12 @@ function addPoi(j){const els=(j.elements||[]).filter(e=>e.tags).sort((a,b)=>!!b.
  return n}
 function applyOsmPoiFilters(){osmPoiMarkers.forEach(m=>{const visible=poiFilterState[m._smartCategory]!==false;if(visible&&!rPoiL.hasLayer(m))m.addTo(rPoiL);if(!visible&&rPoiL.hasLayer(m))rPoiL.removeLayer(m)})}
 async function loadPoi(){if(!RM||RM.getZoom()<7)return;const tok=++rTok,quiet=rS||rD||sRes.length,b=RM.getBounds(),A=`(${[b.getSouth(),b.getWest(),b.getNorth(),b.getEast()].map(x=>x.toFixed(4)).join(',')})`,zoom=RM.getZoom();
- rPoiL.clearLayers();seen.clear();nPoi=0;if(!quiet)rmsg('Loading mapped places for this area from OpenStreetMap…');
+ rPoiL.clearLayers();osmPoiMarkers=[];seen.clear();nPoi=0;if(!quiet)rmsg('Loading mapped places for this area from OpenStreetMap…');
  const settlements=`nwr${A}[place~"^(city|town|village|suburb|neighbourhood|hamlet|locality|isolated_dwelling)$"];`;
  const businesses=zoom>=13?`nwr${A}[shop];nwr${A}[amenity~"^(pharmacy|clinic|hospital|doctors|dentist|veterinary|restaurant|cafe|fast_food|food_court|bar|pub|ice_cream|marketplace|hostel|school|kindergarten|college|university|bank|atm|fuel|place_of_worship|bus_station|post_office|police|fire_station|library|cinema|coworking_space|community_centre|charging_station)$"];nwr${A}[healthcare];nwr${A}[tourism~"^(hostel|guest_house|hotel|apartment|motel|attraction|museum|viewpoint|information)$"];nwr${A}[building=dormitory];nwr${A}[leisure~"^(park|garden|playground|sports_centre|stadium|pitch|nature_reserve)$"];nwr${A}[natural~"^(water|wood|scrub)$"];nwr${A}[railway~"^(station|halt|tram_stop)$"];nwr${A}[highway=bus_stop];nwr${A}[public_transport~"^(station|platform)$"];nwr${A}[aeroway~"^(aerodrome|terminal)$"];nwr${A}[name~"(^| )PG( |$)|paying guest|hostel",i];`:``;
  const settlementCap=zoom<8?250:zoom<10?550:1000;
  const q=`[out:json][timeout:30];(${settlements}${businesses});out center tags ${settlementCap};`;
- try{const j=await ovp(q,50000),n=addPoi(j);if(tok==rTok){poiStatus(`${nPoi.toLocaleString()} mapped places currently loaded in this view`);if(!quiet)rmsg(`${nPoi.toLocaleString()} mapped places loaded. Coverage depends on OpenStreetMap edits in this area.`)}}
+ try{const j=await ovp(q,50000);if(tok!==rTok)return;const n=addPoi(j);if(tok==rTok){poiStatus(`${nPoi.toLocaleString()} mapped places currently loaded in this view`);if(!quiet)rmsg(`${nPoi.toLocaleString()} mapped places loaded. Coverage depends on OpenStreetMap edits in this area.`)}}
  catch(e){if(tok==rTok){poiStatus('OpenStreetMap place markers are temporarily unavailable; place search and base map can still work.',true);if(!quiet)rmsg('The base map is available, but the extra place-marker service did not respond. Try again after moving the map or use place search.',1)}}}
 // ---- global place search (via the Python backend and Photon) ----
 function lsearch(q){
@@ -1047,6 +1051,7 @@ $('#rsb').onclick=async()=>{
      nm:x.name,sub:x.label||x.country||'OpenStreetMap place result',la:x.lat,lo:x.lon,em:'📍',z:x.zoom||17
    }));
    addRes(mapped,tok,q);
+   rSel.clearLayers();sRes.slice(0,10).forEach(x=>addSearchPin(x,false));
    if(sRes.length){
      rmsg(`${sRes.length} result${sRes.length===1?'':'s'} found. Results are global; the current map centre only helps rank nearby matches.`);
    }else{
@@ -1055,7 +1060,7 @@ $('#rsb').onclick=async()=>{
  }catch(error){
    if(tok!==sTok)return;
    if(sRes.length){
-     rmsg(`Live place search is unavailable (${error.message}). Showing ${sRes.length} locally curated Bengaluru match(es) instead.`,1);
+     rSel.clearLayers();sRes.slice(0,10).forEach(x=>addSearchPin(x,false));rmsg(`Live place search is unavailable (${error.message}). Showing local matches instead.`,1);
    }else{
      rmsg(`${error.message} Check that the Python backend is running.`,1);
    }
